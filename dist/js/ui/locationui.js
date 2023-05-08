@@ -10,8 +10,26 @@ var markers = [];
 locationui.datepicker = function(obj) {
     $( obj ).datepicker().datepicker("show");
 }
-
-
+function customOrder(a, b) {
+    // order by id
+    return a.id - b.id;
+  }
+locationui.visualize = function(data) { 
+    var items = new vis.DataSet();
+    var container = document.getElementById("visualization");
+    var options = {
+        order: customOrder,
+    editable: true,
+    zoomable: false,
+    height:"400px"
+    }; 
+    container.innerHTML = ""
+    var timeline = new vis.Timeline(container, items, options);
+    
+    items.clear();
+    items.add(data);
+    timeline.fit(); 
+}
 locationui.renderEventProcess = function() {
     // Render 후 후처리 해주는곳
     var tooltip_render = `<input type="text" onclick="javascript:locationui.datepicker(this); datepicker_from= this" class='datepicker_from'>
@@ -32,6 +50,7 @@ locationui.renderEventProcess = function() {
     });
     locationui.retriveValue()
     locationui.servicestatus()
+    
 }
 
 
@@ -64,29 +83,43 @@ function deleteMarkers() {
     }
     markers = [];
 }
+
+
 function addMarkers(data, password) {
-    
-    // var map = new google.maps.Map(document.getElementById("map"), {
-    //   zoom: 13,
-    //   center: { lat: data[0].lat, lng: data[0].lng },
-    // });
+     
     var first_lat = Number(locationui.decrypt(data[0].lat, data[0].IV, password))
     var first_lng  = Number(locationui.decrypt(data[0].lng, data[0].IV, password))
     console.log(first_lat, first_lng)
     map.setCenter({lat: first_lat, lng: first_lng}); // 예시 좌표
     map.setZoom(17); // 예시 줌 레벨
+    var visualizeData = []
+    var same_created_at = []
 
     for (var i = 0; i < data.length; i++) {
       var iv = data[i].IV
       var lat = Number(locationui.decrypt(data[i].lat, iv, password))
       var lng = Number(locationui.decrypt(data[i].lng, iv, password))
-    //   console.log(iv, lat, lng, data[i].lat)
-      markers.push(new google.maps.Marker({
-        position: { lat: lat, lng: lng },
-        map: map,
-        title: data[i].created_at,
-      }));
+      var timeSliced = data[i].created_at.slice(0, 16);
+      console.log(timeSliced)
+      if (same_created_at.includes(timeSliced)) {
+        console.log(`Skip ${data[i].created_at}`)
+      } else {
+        // km수가 1km좀 더 된다 하면 제외하는 코드 필요 lat lng 기반으로
+        visualizeData.push({
+            id: String(i),
+            content: `${lat}, ${lng}`, 
+            start: data[i].created_at
+          })
+          markers.push(new google.maps.Marker({
+            position: { lat: lat, lng: lng },
+            map: map,
+            title: data[i].created_at,
+          }));
+      } 
+      same_created_at.push(timeSliced) 
     }
+    console.log(visualizeData)
+    locationui.visualize(visualizeData)
     loading.style = "display: none"
   }
 window.initMap = function() {
