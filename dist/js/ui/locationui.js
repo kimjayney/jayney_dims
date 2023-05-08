@@ -130,8 +130,10 @@ locationui.drawLocations = async function(device, interval,password) {
     xmlhttp.send();   
 }
 locationui.retriveValue = function() {
-    console.log(getCookie("deviceId"))
-    console.log(getCookie("devicePw"))
+    const deviceId =getCookie("deviceId")
+    const devicePw = getCookie("devicePw")
+    device.value = deviceId
+    password.value = devicePw 
 }
 locationui.init = function() {
     console.log('dashboard-ui init')
