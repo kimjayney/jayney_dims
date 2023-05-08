@@ -105,6 +105,13 @@ function getCookie(name) {
     }
 }
 
+function setCookie(name, value, expireDate) {
+  var cookieString = name + "=" + value + ";";
+  if (expireDate) {
+    cookieString += "expires=" + expireDate.toUTCString() + ";";
+  }
+  document.cookie = cookieString;
+}
 locationui.drawLocations = async function(device, interval,password) {
     var expireDate = new Date();
     expireDate.setDate(expireDate.getDate() + 14); // 14일 후
