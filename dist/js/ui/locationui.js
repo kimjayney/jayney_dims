@@ -28,7 +28,7 @@ locationui.renderEventProcess = function() {
         $(".datepicker_from").datepicker()
         $(".datepicker_to").datepicker()
     });
-    
+    locationui.retriveValue()
     
 }
 
@@ -141,8 +141,7 @@ locationui.init = function() {
     locationui.skeletonMake()
     locationui.render()
     locationui.timeline() 
-    locationui.cookiesetting()
-    locationui.retriveValue()
+    locationui.cookiesetting() 
 }
 
 locationui.timeline = function() {
