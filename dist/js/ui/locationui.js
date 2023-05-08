@@ -97,9 +97,19 @@ locationui.decrypt = function(cipherText, iv, password) {
     var decryptedWA = CryptoJS.AES.decrypt(encryptedCP, key, { iv: iv});
     return decryptedWA.toString(CryptoJS.enc.Utf8); 
 }
-
+function getCookie(name) {
+    var value = "; " + document.cookie;
+    var parts = value.split("; " + name + "=");
+    if (parts.length == 2) {
+        return parts.pop().split(";").shift();
+    }
+}
 
 locationui.drawLocations = async function(device, interval,password) {
+    var expireDate = new Date();
+    expireDate.setDate(expireDate.getDate() + 14); // 14일 후
+    setCookie("deviceId", device, expireDate);
+    setCookie("devicePw", password, expireDate);
     var xmlhttp = new XMLHttpRequest();
     var url = `https://locationbackend.rainclab.workers.dev/api/view?device=${device}&timeInterval=${interval}`;
     xmlhttp.onreadystatechange = function () {
@@ -112,12 +122,17 @@ locationui.drawLocations = async function(device, interval,password) {
     xmlhttp.open("GET", url, true);
     xmlhttp.send();   
 }
-
+locationui.retriveValue = function() {
+    console.log(getCookie("deviceId"))
+    console.log(getCookie("devicePw"))
+}
 locationui.init = function() {
     console.log('dashboard-ui init')
     locationui.skeletonMake()
     locationui.render()
     locationui.timeline() 
+    locationui.cookiesetting()
+    locationui.retriveValue()
 }
 
 locationui.timeline = function() {
@@ -135,6 +150,9 @@ locationui.destory = function() {
     var myrender = document.getElementById("location-area")
     myrender.remove()
     router.destory = undefined
+}
+locationui.cookiesetting = function() { 
+    document.cookie = "key=value; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
 }
 
 locationui.init();
