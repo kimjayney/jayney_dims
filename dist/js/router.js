@@ -26,11 +26,11 @@ router.add = function(route) {
         });
     })
 }
-
+// View 추가 수동
 router.init = function() {
     console.log("Router initialized") 
     router.add("locationui")
-
+    router.add("intro")
 }
 
 router.destory = undefined
