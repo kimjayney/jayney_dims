@@ -1,0 +1,118 @@
+#list-area {
+    margin-top:10px;    
+    width: 500px;
+    
+    float:left;
+}
+#detail-area {
+    width: 50%;
+    margin-top: 10px;
+    float: left;
+    padding-left: 10px;
+}
+ 
+.detail {
+    
+} 
+.detail-medialist video {
+    height:80px;
+    width:80px;
+}
+
+.detail-text textarea {
+    
+    width: 100%;
+}
+.detail-medialist img {
+    height:80px;
+    width:80px;
+    float:left;
+}
+.highlight {
+    background-color: #7676d4 !important;
+}
+div#list_overlay{
+    width: 100%;
+    height: 100%;
+    background: #ffd5d58f;
+    position: fixed;
+}
+div#detail_overlay {
+    width: 100%;
+    height: 100%;
+    background: #ffd5d58f;
+    position: fixed;
+}
+#listtable tbody tr {
+   line-height: 10px;
+   min-height: 10px;
+   height: 10px;
+}
+
+#listtable thead th:nth-child(1), #listtable tbody td:nth-child(1) {
+    font-size: 13px;
+    width:60px;
+}
+#listtable thead th:nth-child(2), #listtable  tbody td:nth-child(2) {
+    font-size: 12px;
+    width:340px;
+    overflow: hidden; 
+    text-overflow: ellipsis;
+    white-space: nowrap; 
+    height: 20px;
+}
+#listtable thead th:nth-child(3), #listtable  tbody td:nth-child(3) {
+    font-size:12px;
+    
+}
+
+.list table ,tr td{
+    /* border:1px solid red */
+}
+.list tbody {
+    display:block;
+    height:350px;
+    overflow:auto;
+}
+.list thead, .list tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed;/* even columns width , fix width of table too*/
+}
+.list thead {
+    width: calc( 100% - 1em )/* scrollbar is average 1em/16px width, remove it from thead width */
+}
+.list table {
+    /* width:400px; */
+}
+.list #search_input {
+    float:left;
+    width:400px;
+    padding: 0;
+    font-size:11px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#listtable tbody td:nth-child(4) {
+    font-size: 13px;
+}
+.list tbody#listtable_tbody {
+    height: 726px;
+}
+.table-controller svg {
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+}
+
+
+
+/* map */
+#map {
+    height:500px;
+}
+
+#detail > #debugmessage { 
+    height:400px;
+}

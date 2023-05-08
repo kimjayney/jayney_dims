@@ -1,0 +1,30 @@
+ <div id="location-filter">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+      
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <input type="text" id="device" class="form-control" placeholder="id"/>
+          <input type="password" id="password" class="form-control" placeholder="password"/>
+          <div class="btn-group mr-2">
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 10,password.value )">10분전 위치</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 60, password.value)">1시간 전 위치</button>
+            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 180, password.value)">3시간 전 위치</button>
+          </div>
+          
+        
+        <div class="input-group-addon">
+            <span class="glyphicon glyphicon-th"></span>
+        </div>
+        </div>
+        
+      </div>
+</div>
+
+<div id="map-area">
+    <div id="map"></div>
+    
+</div>
+<div id="detail">
+  <code id="debugmessage">
+  </code>
+</div>
+
