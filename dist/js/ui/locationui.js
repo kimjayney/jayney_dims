@@ -6,12 +6,14 @@ var map;
 var datepicker_from;
 var datepicker_to ; 
 
-
+var markers = [];
 locationui.datepicker = function(obj) {
     $( obj ).datepicker().datepicker("show");
 }
 
+
 locationui.renderEventProcess = function() {
+    // Render 후 후처리 해주는곳
     var tooltip_render = `<input type="text" onclick="javascript:locationui.datepicker(this); datepicker_from= this" class='datepicker_from'>
     <input onclick="javascript:locationui.datepicker(this); datepicker_to = this" type="text" class='datepicker_to'>
     <button class="btn btn-primary" type="submit">적용</button>`
@@ -29,7 +31,7 @@ locationui.renderEventProcess = function() {
         $(".datepicker_to").datepicker()
     });
     locationui.retriveValue()
-    
+    locationui.servicestatus()
 }
 
 
@@ -56,24 +58,36 @@ locationui.skeletonMake = function() {
     container.innerHTML = `${dashboard_area.outerHTML}` 
     
 }
+function deleteMarkers() {
+    for (var i = 0; i < markers.length; i++) {
+        markers[i].setMap(null);
+    }
+    markers = [];
+}
 function addMarkers(data, password) {
     
     // var map = new google.maps.Map(document.getElementById("map"), {
     //   zoom: 13,
     //   center: { lat: data[0].lat, lng: data[0].lng },
     // });
+    var first_lat = Number(locationui.decrypt(data[0].lat, data[0].IV, password))
+    var first_lng  = Number(locationui.decrypt(data[0].lng, data[0].IV, password))
+    console.log(first_lat, first_lng)
+    map.setCenter({lat: first_lat, lng: first_lng}); // 예시 좌표
+    map.setZoom(17); // 예시 줌 레벨
 
     for (var i = 0; i < data.length; i++) {
       var iv = data[i].IV
       var lat = Number(locationui.decrypt(data[i].lat, iv, password))
       var lng = Number(locationui.decrypt(data[i].lng, iv, password))
-      console.log(iv, lat, lng, data[i].lat)
-      var marker = new google.maps.Marker({
+    //   console.log(iv, lat, lng, data[i].lat)
+      markers.push(new google.maps.Marker({
         position: { lat: lat, lng: lng },
         map: map,
         title: data[i].created_at,
-      });
+      }));
     }
+    loading.style = "display: none"
   }
 window.initMap = function() {
     map = new google.maps.Map(document.getElementById("map"), {
@@ -112,7 +126,26 @@ function setCookie(name, value, expireDate) {
   }
   document.cookie = cookieString;
 }
+ 
+locationui.servicestatus = function() { 
+    servicestatus.style = "display: list-item"
+    fetch('https://locationbackend.rainclab.workers.dev/api/healthcheck')
+    .then(response => response.json())
+    .then(data => {
+        console.log(data)
+        if (data.success == true) {
+            servicestatus.innerHTML = `Service: Active, message: ${data.message_ko_KR}`
+        } 
+        if (data.success == true && data.status == true) {
+            servicestatus.innerHTML = `Service: Active, Location DB: Active, message: ${data.message_ko_KR}`
+        }
+        
+    }).catch(error => console.error(error));
+
+}
 locationui.drawLocations = async function(device, interval,password) {
+    loading.style = "display: inline-block"
+    deleteMarkers()
     var expireDate = new Date();
     expireDate.setDate(expireDate.getDate() + 14); // 14일 후
     setCookie("deviceId", device, expireDate);
@@ -141,7 +174,8 @@ locationui.init = function() {
     locationui.skeletonMake()
     locationui.render()
     locationui.timeline() 
-    locationui.cookiesetting() 
+    locationui.cookiesetting()
+     
 }
 
 locationui.timeline = function() {
