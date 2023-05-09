@@ -193,7 +193,7 @@ locationui.drawLocations = async function(device, interval,password,authorizatio
             addMarkers(data.data, password);
             debugmessage.innerHTML = this.responseText
         } else { 
-            alert("Error")
+            alert(data.message_ko_KR)
         } 
     }
     };
