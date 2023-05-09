@@ -188,8 +188,13 @@ locationui.drawLocations = async function(device, interval,password,authorizatio
     xmlhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         var data = JSON.parse(this.responseText);
-        addMarkers(data, password);
-        debugmessage.innerHTML = this.responseText
+        console.log(data.data)
+        if (data.status == true) { 
+            addMarkers(data.data, password);
+            debugmessage.innerHTML = this.responseText
+        } else { 
+            alert("Error")
+        } 
     }
     };
     xmlhttp.open("GET", url, true);
