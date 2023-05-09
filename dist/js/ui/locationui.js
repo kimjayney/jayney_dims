@@ -194,6 +194,7 @@ locationui.drawLocations = async function(device, interval,password,authorizatio
             debugmessage.innerHTML = this.responseText
         } else { 
             alert(data.message_ko_KR)
+            loading.style = "display: none"
         } 
     }
     };
