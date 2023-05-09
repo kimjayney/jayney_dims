@@ -3,11 +3,12 @@
   
         <div class="btn-toolbar mb-2 mb-md-0">
             <input type="text" id="device" class="form-control" placeholder="id"/>
+            <input type="password" id="authorization" class="form-control" placeholder="device authorization code"/>
             <input type="password" id="password" class="form-control" placeholder="password"/>
             <div class="btn-group mr-2">
-              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 10,password.value )">10분전 위치</button>
-              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 60, password.value)">1시간 전 위치</button>
-              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 180, password.value)">3시간 전 위치</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 10,password.value, authorization.value)">10분전 위치</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 60, password.value, authorization.value)">1시간 전 위치</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 180, password.value, authorization.value)">3시간 전 위치</button>
             </div> 
           <div class="input-group-addon">
               <span class="glyphicon glyphicon-th"></span>

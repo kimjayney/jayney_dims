@@ -176,7 +176,7 @@ locationui.servicestatus = function() {
     }).catch(error => console.error(error));
 
 }
-locationui.drawLocations = async function(device, interval,password) {
+locationui.drawLocations = async function(device, interval,password,authorization) {
     loading.style = "display: inline-block"
     deleteMarkers()
     var expireDate = new Date();
@@ -184,7 +184,7 @@ locationui.drawLocations = async function(device, interval,password) {
     setCookie("deviceId", device, expireDate);
     setCookie("devicePw", password, expireDate);
     var xmlhttp = new XMLHttpRequest();
-    var url = `https://locationbackend.rainclab.workers.dev/api/view?device=${device}&timeInterval=${interval}`;
+    var url = `https://locationbackend.rainclab.workers.dev/api/view?device=${device}&timeInterval=${interval}&authorization=${authorization}`;
     xmlhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         var data = JSON.parse(this.responseText);
