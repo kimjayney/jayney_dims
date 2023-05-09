@@ -183,6 +183,7 @@ locationui.drawLocations = async function(device, interval,password,authorizatio
     expireDate.setDate(expireDate.getDate() + 14); // 14일 후
     setCookie("deviceId", device, expireDate);
     setCookie("devicePw", password, expireDate);
+    setCookie("deviceAuth", authorization, expireDate)
     var xmlhttp = new XMLHttpRequest();
     var url = `https://locationbackend.rainclab.workers.dev/api/view?device=${device}&timeInterval=${interval}&authorization=${authorization}`;
     xmlhttp.onreadystatechange = function () {
@@ -204,9 +205,11 @@ locationui.drawLocations = async function(device, interval,password,authorizatio
 locationui.retriveValue = function() {
     const deviceId =getCookie("deviceId")
     const devicePw = getCookie("devicePw")
+    const authorization = getCookie("deviceAuth")
     
     document.getElementById("device").value  = deviceId
     document.getElementById("password").value  = devicePw  
+    document.getElementById("authorization").value = authorization
 }
 locationui.init = function() {
     console.log('dashboard-ui init')
