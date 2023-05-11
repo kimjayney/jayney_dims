@@ -206,17 +206,22 @@ locationui.drawLocations = async function(device, interval,password,authorizatio
     xmlhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         var data = JSON.parse(this.responseText);
-        if (data.data.length > 0) {
-            if (data.status == true) { 
-                addMarkers(data.data, password);
-                debugmessage.innerHTML = this.responseText
-            } else { 
-                alert(data.message_ko_KR)
-                loading.style = "display: none"
-            } 
+        if (data.status == true) {
+            if (data.data.length > 0) {
+                if (data.status == true) { 
+                    addMarkers(data.data, password);
+                    debugmessage.innerHTML = this.responseText
+                } else { 
+                    alert(data.message_ko_KR)
+                    loading.style = "display: none"
+                } 
+            } else {
+                alert("위치정보가 수집되지 않았어요. 수집기를 켜시면 수집됩니다.")
+            }
         } else {
-            alert("위치정보가 수집되지 않았어요. 수집기를 켜시면 수집됩니다.")
+            alert(data.message_ko_KR)
         }
+        
         
         
     }
