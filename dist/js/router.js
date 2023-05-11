@@ -31,6 +31,13 @@ router.init = function() {
     console.log("Router initialized") 
     router.add("locationui")
     router.add("intro")
+    var fragment = window.location.hash;
+    if (fragment) {
+        var route =fragment.split("#")[1].split("?")[0]
+        $.loadScript( `${route}.js`  , function(){
+            console.log(`[router] ${route} Loaded`)
+        });
+    }
 }
 
 router.destory = undefined

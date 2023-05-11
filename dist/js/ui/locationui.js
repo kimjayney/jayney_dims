@@ -30,6 +30,22 @@ locationui.visualize = function(data) {
     items.add(data);
     timeline.fit(); 
 }
+
+locationui.parametersetting = function() {
+    
+    if (getParam("deviceId") || getParam("deviceKey")) {
+        locationui.parameterRender()
+    } else {
+        locationui.cookiesetting()
+    }
+}
+locationui.parameterRender = function() { 
+    device.value = getParam("deviceId")
+    password.value = getParam("privateKey")
+    authorization.value =  getParam("deviceKey")
+}
+
+
 locationui.renderEventProcess = function() {
     // Render 후 후처리 해주는곳
     var tooltip_render = `<input type="text" onclick="javascript:locationui.datepicker(this); datepicker_from= this" class='datepicker_from'>
@@ -50,6 +66,7 @@ locationui.renderEventProcess = function() {
     });
     locationui.retriveValue()
     locationui.servicestatus()
+    locationui.parametersetting() 
     
 }
 
@@ -162,7 +179,7 @@ function setCookie(name, value, expireDate) {
  
 locationui.servicestatus = function() { 
     servicestatus.style = "display: list-item"
-    fetch('https://locationbackend.rainclab.workers.dev/api/healthcheck')
+    fetch('https://jayneycoffee.api.location.rainclab.net/api/healthcheck')
     .then(response => response.json())
     .then(data => {
         console.log(data)
@@ -185,7 +202,7 @@ locationui.drawLocations = async function(device, interval,password,authorizatio
     setCookie("devicePw", password, expireDate);
     setCookie("deviceAuth", authorization, expireDate)
     var xmlhttp = new XMLHttpRequest();
-    var url = `https://locationbackend.rainclab.workers.dev/api/view?device=${device}&timeInterval=${interval}&authorization=${authorization}`;
+    var url = `https://jayneycoffee.api.location.rainclab.net/api/view?device=${device}&timeInterval=${interval}&authorization=${authorization}`;
     xmlhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         var data = JSON.parse(this.responseText);
@@ -216,14 +233,7 @@ locationui.retriveValue = function() {
     document.getElementById("password").value  = devicePw  
     document.getElementById("authorization").value = authorization
 }
-locationui.init = function() {
-    console.log('dashboard-ui init')
-    locationui.skeletonMake()
-    locationui.render()
-    locationui.timeline() 
-    locationui.cookiesetting()
-     
-}
+
 
 locationui.timeline = function() {
     
@@ -243,6 +253,16 @@ locationui.destory = function() {
 }
 locationui.cookiesetting = function() { 
     document.cookie = "key=value; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
+}
+
+
+locationui.init = function() {
+    console.log('dashboard-ui init')
+    locationui.skeletonMake()
+    locationui.render()
+    locationui.timeline()
+        
+   
 }
 
 locationui.init();
