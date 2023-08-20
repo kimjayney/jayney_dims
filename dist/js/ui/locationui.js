@@ -40,6 +40,7 @@ locationui.parametersetting = function() {
 }
 locationui.parameterRender = function() {  
     const paramValues = location.hash.split("?")[1].split("&")
+    let dateRangeValue = {}
     paramValues.forEach((item) => {
         const paramName = item.split("=")[0]
         const paramValue = item.split("=")[1]
@@ -61,10 +62,21 @@ locationui.parameterRender = function() {
                 hour3.click()
            } else if (paramValue == "hour6") {
                 hour6.click()
-           }
-           
+           } 
+        }
+        if (paramName == "startDate") {
+            // value
+            // 2023-08-20 07:00:00 - 2023-08-22 03:00:00
+            dateRangeValue["startDate"] = decodeURI(paramValue);
+        }
+        if (paramName == "endDate") {
+            // value
+            // 2023-08-20 07:00:00 - 2023-08-22 03:00:00
+            dateRangeValue["endDate"] = decodeURI(paramValue);
         }
     })
+    console.log(dateRangeValue)
+    datetimes.value = `${dateRangeValue["startDate"]} - ${dateRangeValue["endDate"]}`
 }
 
 
@@ -88,8 +100,9 @@ locationui.renderEventProcess = function() {
     });
     locationui.retriveValue()
     locationui.servicestatus()
-    locationui.parametersetting() 
     
+    locationui.datetimepicker()
+    locationui.parametersetting() 
 }
 
 
@@ -146,9 +159,9 @@ function addMarkers(data, password) {
       var lat = Number(locationui.decrypt(data[i].lat, iv, password))
       var lng = Number(locationui.decrypt(data[i].lng, iv, password))
       var timeSliced = data[i].created_at.slice(0, 16);
-      console.log(timeSliced)
+    //   console.log(timeSliced)
       if (same_created_at.includes(timeSliced)) {
-        console.log(`Skip ${data[i].created_at}`)
+        // console.log(`Skip ${data[i].created_at}`)
       } else {
         // km수가 1km좀 더 된다 하면 제외하는 코드 필요 lat lng 기반으로
         visualizeData.push({
@@ -221,7 +234,14 @@ locationui.servicestatus = function() {
         
     }).catch(error => console.error(error));
 }
-locationui.drawLocations = async function(device, interval,password,authorization) {
+locationui.drawLocationsBeforePreprocess = function(device, password, authorization, dateInfo) {
+    var dateObject = {
+        startDate : dateInfo.split(" - " )[0],
+        endDate : dateInfo.split(" - " )[1]
+    }
+    locationui.drawLocations(device,dateObject, password, authorization)
+}
+locationui.drawLocations = async function(device, date ,password,authorization) {
     loading.style = "display: inline-block"
     deleteMarkers()
     var expireDate = new Date();
@@ -230,7 +250,14 @@ locationui.drawLocations = async function(device, interval,password,authorizatio
     setCookie("devicePw", password, expireDate);
     setCookie("deviceAuth", authorization, expireDate)
     var xmlhttp = new XMLHttpRequest();
-    var url = `https://jayneycoffee.api.location.rainclab.net/api/view?device=${device}&timeInterval=${interval}&authorization=${authorization}`;
+    
+    var url
+    if (typeof(date) == "object") { 
+        console.log(date.startDate)
+        url = `https://jayneycoffee.api.location.rainclab.net/api/view?device=${device}&startDate=${date.startDate}&endDate=${date.endDate}&authorization=${authorization}`;
+    } else {
+        url = `https://jayneycoffee.api.location.rainclab.net/api/view?device=${device}&timeInterval=${date}&authorization=${authorization}`;
+    }
     xmlhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
         var data = JSON.parse(this.responseText);
@@ -250,8 +277,6 @@ locationui.drawLocations = async function(device, interval,password,authorizatio
             alert(data.message_ko_KR)
         }
         
-        
-        
     }
     };
     xmlhttp.open("GET", url, true);
@@ -268,8 +293,17 @@ locationui.retriveValue = function() {
 }
 
 
-locationui.timeline = function() {
-    
+locationui.datetimepicker = function() {
+    $(function() {
+        $('input[name="datetimes"]').daterangepicker({
+          timePicker: true,
+          startDate: moment().startOf('hour'),
+          endDate: moment().startOf('hour').add(32, 'hour'),
+          locale: {
+            format: 'Y-MM-DD hh:mm:ss'
+          }
+        });
+      });
 }
 
 locationui.render = function() {
@@ -292,8 +326,7 @@ locationui.cookiesetting = function() {
 locationui.init = function() {
     console.log('dashboard-ui init')
     locationui.skeletonMake()
-    locationui.render()
-    locationui.timeline()
+    locationui.render() 
 }
 
 locationui.init();
