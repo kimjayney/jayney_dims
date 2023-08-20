@@ -32,17 +32,27 @@ locationui.visualize = function(data) {
 }
 
 locationui.parametersetting = function() {
-    
-    if (getParam("deviceId") || getParam("deviceKey")) {
+    if (location.hash.split("?").length > 1) {
         locationui.parameterRender()
     } else {
         locationui.cookiesetting()
     }
 }
-locationui.parameterRender = function() { 
-    device.value = getParam("deviceId")
-    password.value = getParam("privateKey")
-    authorization.value =  getParam("deviceKey")
+locationui.parameterRender = function() {  
+    const paramValues = location.hash.split("?")[1].split("&")
+    paramValues.forEach((item) => {
+        const paramName = item.split("=")[0]
+        const paramValue = item.split("=")[1]
+        if (paramName == "deviceId") {
+            device.value = paramValue
+        }
+        if (paramName == "privateKey") {
+            password.value = paramValue
+        }
+        if (paramName == "deviceKey") {
+            authorization.value = paramValue
+        }
+    })
 }
 
 
@@ -101,6 +111,13 @@ function deleteMarkers() {
     markers = [];
 }
 
+function manualMarkers(lat, lng) {
+    markers.push(new google.maps.Marker({
+        position: { lat: lat, lng: lng },
+        map: map,
+        title: ''
+    }));
+}
 
 function addMarkers(data, password) {
      
@@ -266,8 +283,6 @@ locationui.init = function() {
     locationui.skeletonMake()
     locationui.render()
     locationui.timeline()
-        
-   
 }
 
 locationui.init();
