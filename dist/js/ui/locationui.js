@@ -5,8 +5,8 @@ var locationui = {
 var map;
 var datepicker_from;
 var datepicker_to ; 
-
 var markers = [];
+
 locationui.datepicker = function(obj) {
     $( obj ).datepicker().datepicker("show");
 }
@@ -31,7 +31,7 @@ locationui.visualize = function(data) {
     timeline.fit(); 
 }
 
-locationui.parametersetting = function() {
+locationui.parametersetting = function() { 
     if (location.hash.split("?").length > 1) {
         locationui.parameterRender()
     } else {
@@ -41,6 +41,7 @@ locationui.parametersetting = function() {
 locationui.parameterRender = function() {  
     const paramValues = location.hash.split("?")[1].split("&")
     let dateRangeValue = {}
+    console.log("parameterRender")
     paramValues.forEach((item) => {
         const paramName = item.split("=")[0]
         const paramValue = item.split("=")[1]
@@ -75,8 +76,15 @@ locationui.parameterRender = function() {
             dateRangeValue["endDate"] = decodeURI(paramValue);
         }
     })
+    
     console.log(dateRangeValue)
-    datetimes.value = `${dateRangeValue["startDate"]} - ${dateRangeValue["endDate"]}`
+    
+    // datetimes.value = `${dateRangeValue["startDate"]} - ${dateRangeValue["endDate"]}`
+    if (dateRangeValue.hasOwnProperty("startDate")) {
+        const dateValue = `${dateRangeValue["startDate"]} - ${dateRangeValue["endDate"]}`
+        locationui.drawLocationsBeforePreprocess(device.value, password.value, authorization.value, dateValue)
+    } else { 
+    }
 }
 
 
@@ -100,9 +108,8 @@ locationui.renderEventProcess = function() {
     });
     locationui.retriveValue()
     locationui.servicestatus()
-    
     locationui.datetimepicker()
-    locationui.parametersetting() 
+    locationui.parametersetting()
 }
 
 
@@ -235,11 +242,26 @@ locationui.servicestatus = function() {
     }).catch(error => console.error(error));
 }
 locationui.drawLocationsBeforePreprocess = function(device, password, authorization, dateInfo) {
+    
     var dateObject = {
         startDate : dateInfo.split(" - " )[0],
         endDate : dateInfo.split(" - " )[1]
     }
+    
+    rangeText.innerHTML = `현재 보이고 있는 시간기준(I TIME, Asia/Seoul): ${dateObject.startDate} ~ ${dateObject.endDate}`
+    // Set the start date and time
+    var startDate = moment(dateObject.startDate);
+    var endDate = moment(dateObject.endDate);
+    $(function() {
+        var daterangepicker = $('#datetimes').data('daterangepicker');
+        // Set the daterangepicker's start and end dates
+        daterangepicker.setStartDate(startDate);
+        daterangepicker.setEndDate(endDate); 
+    })
+    
+    
     locationui.drawLocations(device,dateObject, password, authorization)
+    
 }
 locationui.drawLocations = async function(device, date ,password,authorization) {
     loading.style = "display: inline-block"
@@ -255,8 +277,9 @@ locationui.drawLocations = async function(device, date ,password,authorization) 
     if (typeof(date) == "object") { 
         console.log(date.startDate)
         url = `https://jayneycoffee.api.location.rainclab.net/api/view?device=${device}&startDate=${date.startDate}&endDate=${date.endDate}&authorization=${authorization}`;
-        
+        document.getElementById("datetimes").setAttribute("fromurl","true")
     } else {
+        rangeText.innerHTML = `${date}분 전 위치 기준`
         url = `https://jayneycoffee.api.location.rainclab.net/api/view?device=${device}&timeInterval=${date}&authorization=${authorization}`;
     }
     xmlhttp.onreadystatechange = function () {
@@ -272,7 +295,9 @@ locationui.drawLocations = async function(device, date ,password,authorization) 
                     loading.style = "display: none"
                 } 
             } else {
+                loading.style = "display: none"
                 alert("위치정보가 수집되지 않았어요. 수집기를 켜시면 수집됩니다.")
+
             }
         } else {
             alert(data.message_ko_KR)
@@ -303,10 +328,29 @@ locationui.datetimepicker = function() {
           locale: {
             format: 'Y-MM-DD HH:mm:ss'
           }
+        }).on("apply.daterangepicker", function(e) {
+            locationui.drawLocationsBeforePreprocess(device.value, password.value, authorization.value, this.value)
         });
+        
       });
 }
+locationui.share = function() { 
+    let dateValue = ""
+    if (document.getElementById("datetimes").getAttribute("fromurl") == 'true') {
+        var daterangepicker = $('#datetimes').data('daterangepicker');
 
+        // Get the start date
+        var startDate = daterangepicker.startDate.format('YYYY-MM-DD HH:mm:ss');
+        var endDate = daterangepicker.endDate.format('YYYY-MM-DD HH:mm:ss');
+        dateValue = `&startDate=${encodeURI(startDate)}&endDate=${encodeURI(endDate)}`
+    }
+    const parameter = `deviceId=${encodeURI(device.value)}&deviceKey=${authorization.id}&privateKey=${password.value}${dateValue}`
+    const URL = `https://jayneycoffee.location.rainclab.net/#locationui?${parameter}`
+    window.navigator.clipboard.writeText(URL).then(() => {
+        // 복사가 완료되면 이 부분이 호출된다.
+        alert("복사 완료!");
+        });  
+}
 locationui.render = function() {
     console.log("Render()")
     main.innerHtmlRender("./render/locationui.html", "location-area", locationui.renderEventProcess) 
