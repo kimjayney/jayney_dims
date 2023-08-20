@@ -255,6 +255,7 @@ locationui.drawLocations = async function(device, date ,password,authorization) 
     if (typeof(date) == "object") { 
         console.log(date.startDate)
         url = `https://jayneycoffee.api.location.rainclab.net/api/view?device=${device}&startDate=${date.startDate}&endDate=${date.endDate}&authorization=${authorization}`;
+        
     } else {
         url = `https://jayneycoffee.api.location.rainclab.net/api/view?device=${device}&timeInterval=${date}&authorization=${authorization}`;
     }
@@ -300,7 +301,7 @@ locationui.datetimepicker = function() {
           startDate: moment().startOf('hour'),
           endDate: moment().startOf('hour').add(32, 'hour'),
           locale: {
-            format: 'Y-MM-DD hh:mm:ss'
+            format: 'Y-MM-DD HH:mm:ss'
           }
         });
       });
