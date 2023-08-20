@@ -344,7 +344,7 @@ locationui.share = function() {
         var endDate = daterangepicker.endDate.format('YYYY-MM-DD HH:mm:ss');
         dateValue = `&startDate=${encodeURI(startDate)}&endDate=${encodeURI(endDate)}`
     }
-    const parameter = `deviceId=${encodeURI(device.value)}&deviceKey=${authorization.id}&privateKey=${password.value}${dateValue}`
+    const parameter = `deviceId=${encodeURI(device.value)}&deviceKey=${authorization.value}&privateKey=${password.value}${dateValue}`
     const URL = `https://jayneycoffee.location.rainclab.net/#locationui?${parameter}`
     window.navigator.clipboard.writeText(URL).then(() => {
         // 복사가 완료되면 이 부분이 호출된다.
