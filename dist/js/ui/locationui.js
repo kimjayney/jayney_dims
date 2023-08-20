@@ -52,6 +52,18 @@ locationui.parameterRender = function() {
         if (paramName == "deviceKey") {
             authorization.value = paramValue
         }
+        if (paramName == "live") {
+           if (paramValue == "min10"){
+                min10.click()
+           } else if (paramValue == "hour1") {
+                hour1.click()
+           } else if (paramValue == "hour3") {
+                hour3.click()
+           } else if (paramValue == "hour6") {
+                hour6.click()
+           }
+           
+        }
     })
 }
 
@@ -208,7 +220,6 @@ locationui.servicestatus = function() {
         }
         
     }).catch(error => console.error(error));
-
 }
 locationui.drawLocations = async function(device, interval,password,authorization) {
     loading.style = "display: inline-block"
