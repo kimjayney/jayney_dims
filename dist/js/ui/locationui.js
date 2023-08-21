@@ -156,6 +156,11 @@ function addMarkers(data, password) {
     var first_lat = Number(locationui.decrypt(data[0].lat, data[0].IV, password))
     var first_lng  = Number(locationui.decrypt(data[0].lng, data[0].IV, password))
     console.log(first_lat, first_lng)
+    if (first_lat == Number(0) || first_lng == Number(0)) {
+        alert("개인 키 오류입니다. 키를 확인해 주세요.")
+        return    
+    } 
+
     map.setCenter({lat: first_lat, lng: first_lng}); // 예시 좌표
     map.setZoom(17); // 예시 줌 레벨
     var visualizeData = []
