@@ -6,6 +6,7 @@
             <input type="password" id="authorization" class="form-control" placeholder="device authorization code"/>
             <input type="password" id="password" class="form-control" placeholder="password"/>
             <div class="btn-group mr-2">
+              <button id="realtime" type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.realtime()">실시간</button>
               <button id="min10" type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 10,password.value, authorization.value)">10분전 위치</button>
               <button id="hour1" type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 60, password.value, authorization.value)">1시간 전 위치</button>
               <button id="hour3" type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 180, password.value, authorization.value)">3시간 전 위치</button>
@@ -17,11 +18,7 @@
           <div class="input-group-addon">
               <span class="glyphicon glyphicon-th"></span>
           </div>
-          
-          <!-- <div class="form-check form-switch">
-            <input class="form-check-input" type="checkbox" id="realtimeLocation">
-            <label class="form-check-label" for="realtimeLocation">실시간</label>
-          </div> -->
+           
         </div> 
        
       </div>
