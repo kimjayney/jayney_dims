@@ -317,7 +317,9 @@ locationui.drawLocations = async function (
           }
         } else {
           loading.style = "display: none";
-          alert("위치정보가 수집되지 않았어요. 수집기를 켜시면 수집됩니다.");
+          if (date !== 5) {
+            alert("위치정보가 수집되지 않았어요. 수집기를 켜시면 수집됩니다.");
+          }
         }
       } else {
         alert(data.message_ko_KR);
