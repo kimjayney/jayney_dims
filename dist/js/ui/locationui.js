@@ -257,7 +257,10 @@ function addMarkers(data, password) {
         .bindPopup(
           `ZTime: ${data[i].created_at}, TIMEZONE(${
             timezone.value
-          }) => ${convertTimeByTimezone(data[i].created_at, timezone.value)}`
+          }) => ${convertTimeByTimezone(
+            data[i].created_at,
+            timezone.value
+          )}, IPAddr: ${data[i].ip_addr}`
         );
       markers.push(marker);
       // markers.push(
