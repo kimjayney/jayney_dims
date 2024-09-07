@@ -5,12 +5,6 @@ var datepicker_to;
 var markers = [];
 var globalInterval;
 
-let mapOptions = {
-  center: [37.5, 127.6],
-  zoom: 10,
-  zoomControl: false,
-};
-
 locationui.datepicker = function (obj) {
   $(obj).datepicker().datepicker("show");
 };
@@ -217,6 +211,11 @@ locationui.initmap = function () {
   // script.defer = true;
   // script.async = true;
   // document.head.appendChild(script);
+  let mapOptions = {
+    center: [37.5, 127.6],
+    zoom: 10,
+    zoomControl: false,
+  };
   map = new L.map("map", mapOptions);
   let layer = new L.TileLayer(
     "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
