@@ -4,6 +4,7 @@ var map;
 var datepicker_from;
 var datepicker_to;
 var markers = [];
+var globalInterval;
 
 locationui.datepicker = function (obj) {
   $(obj).datepicker().datepicker("show");
@@ -90,10 +91,10 @@ locationui.parameterRender = function () {
   }
 };
 locationui.realtime = function () {
-  setInterval(() => {
+  globalInterval = setInterval(() => {
     locationui.drawLocations(
       device.value,
-      10,
+      5,
       password.value,
       authorization.value
     );
@@ -325,6 +326,9 @@ locationui.drawLocations = async function (
   };
   xmlhttp.open("GET", url, true);
   xmlhttp.send();
+  if (date == 5) {
+    clearInterval(globalInterval);
+  }
 };
 locationui.retriveValue = function () {
   const deviceId = getCookie("deviceId");
