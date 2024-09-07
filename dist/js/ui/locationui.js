@@ -255,8 +255,8 @@ locationui.removeTimerInterval = function () {
       globalInterval = undefined;
       console.log("clearInterval Success");
     })
-    .err(() => {
-      console.log("clearInterval Err");
+    .catch((err) => {
+      console.log("clearInterval Err", err);
     });
 };
 locationui.servicestatus = function () {
