@@ -328,6 +328,7 @@ locationui.drawLocations = async function (
   xmlhttp.send();
   if (date == 5) {
     clearInterval(globalInterval);
+    console.log("ClearInterval");
   }
 };
 locationui.retriveValue = function () {
