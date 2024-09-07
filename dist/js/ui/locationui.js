@@ -239,7 +239,24 @@ function setCookie(name, value, expireDate) {
   }
   document.cookie = cookieString;
 }
-
+locationui.removeTimerInterval = function () {
+  const myPromise = new Promise((resolve, reject) => {
+    try {
+      clearInterval(globalInterval);
+      resolve();
+    } catch (err) {
+      reject();
+    }
+  });
+  myPromise
+    .then(() => {
+      globalInterval = undefined;
+      console.log("clearInterval Success");
+    })
+    .err(() => {
+      console.log("clearInterval Err");
+    });
+};
 locationui.servicestatus = function () {
   servicestatus.style = "display: list-item";
   fetch("https://jayneycoffee.api.location.rainclab.net/api/healthcheck")
