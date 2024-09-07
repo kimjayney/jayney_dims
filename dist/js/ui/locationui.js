@@ -326,7 +326,7 @@ locationui.drawLocations = async function (
   };
   xmlhttp.open("GET", url, true);
   xmlhttp.send();
-  if (date == 5) {
+  if (!date == 5) {
     clearInterval(globalInterval);
     console.log("ClearInterval");
   }
