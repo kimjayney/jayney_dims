@@ -1,6 +1,5 @@
 var locationui = {};
 
-var map;
 var datepicker_from;
 var datepicker_to;
 var markers = [];
