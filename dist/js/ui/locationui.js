@@ -86,7 +86,7 @@ locationui.parameterRender = function() {
     } else { 
     }
 }
-location.realtime() = function() {
+locationui.realtime() = function() {
     setInterval(()=> {
         location.drawLocations(device.value, 10 ,password.value, authorization.value)
         console.log("Sync location ")
