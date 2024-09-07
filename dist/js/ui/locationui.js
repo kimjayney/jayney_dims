@@ -4,9 +4,7 @@ var datepicker_from;
 var datepicker_to;
 var markers = [];
 var globalInterval;
-let layer = new L.TileLayer(
-  "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-);
+
 let mapOptions = {
   center: [37.5, 127.6],
   zoom: 10,
@@ -198,7 +196,7 @@ function addMarkers(data, password) {
         start: data[i].created_at,
       });
       let marker = new L.Marker([lat, lng]);
-      marker.addTo(map);
+      marker.addTo(map).bindPopup(data);
       markers.push(marker);
       // markers.push(
       //   new google.maps.Marker({
@@ -222,7 +220,10 @@ locationui.initmap = function () {
   // script.defer = true;
   // script.async = true;
   // document.head.appendChild(script);
-  let map = new L.map("map", mapOptions);
+  map = new L.map("map", mapOptions);
+  let layer = new L.TileLayer(
+    "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  );
   map.addLayer(layer);
   console.log("initmap");
 };
