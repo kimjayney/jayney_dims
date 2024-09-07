@@ -242,8 +242,10 @@ function setCookie(name, value, expireDate) {
 locationui.removeTimerInterval = function () {
   const myPromise = new Promise((resolve, reject) => {
     try {
-      clearInterval(globalInterval);
-      resolve();
+      if (globalInterval == undefined) {
+        clearInterval(globalInterval);
+        resolve();
+      }
     } catch (err) {
       reject();
     }
@@ -346,7 +348,7 @@ locationui.drawLocations = async function (
   xmlhttp.open("GET", url, true);
   xmlhttp.send();
   if (date !== 5) {
-    clearInterval(globalInterval);
+    locationui.removeTimerInterval();
     console.log("ClearInterval");
   }
 };
