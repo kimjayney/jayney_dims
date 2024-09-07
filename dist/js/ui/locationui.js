@@ -143,6 +143,9 @@ function deleteMarkers() {
     markers[i].setMap(null);
   }
   markers = [];
+  for (var i = 0; i < markers.length; i++) {
+    map.removeLayer(markers[i]);
+  }
 }
 
 function manualMarkers(lat, lng) {
@@ -187,13 +190,16 @@ function addMarkers(data, password) {
         content: `${lat}, ${lng}`,
         start: data[i].created_at,
       });
-      markers.push(
-        new google.maps.Marker({
-          position: { lat: lat, lng: lng },
-          map: map,
-          title: data[i].created_at,
-        })
-      );
+      let marker = new L.Marker([lat, lng]);
+      marker.addTo(map).bindPopup(data);
+      markers.push(marker);
+      // markers.push(
+      //   new google.maps.Marker({
+      //     position: { lat: lat, lng: lng },
+      //     map: map,
+      //     title: data[i].created_at,
+      //   })
+      // );
     }
     same_created_at.push(timeSliced);
   }
@@ -201,20 +207,25 @@ function addMarkers(data, password) {
   locationui.visualize(visualizeData);
   loading.style = "display: none";
 }
-window.initMap = function () {
-  map = new google.maps.Map(document.getElementById("map"), {
-    center: { lat: 35.845247, lng: 125.1234685 },
-    zoom: 6,
-  });
-};
 
 locationui.initmap = function () {
-  var script = document.createElement("script");
-  script.src =
-    "https://maps.googleapis.com/maps/api/js?key=AIzaSyD8SEKBpDIuPr_ut0eNjiQ_f7lNxSgJsLo&callback=initMap";
-  script.defer = true;
-  script.async = true;
-  document.head.appendChild(script);
+  // var script = document.createElement("script");
+  // script.src =
+  //   "https://maps.googleapis.com/maps/api/js?key=AIzaSyD8SEKBpDIuPr_ut0eNjiQ_f7lNxSgJsLo&callback=initMap";
+  // script.defer = true;
+  // script.async = true;
+  // document.head.appendChild(script);
+  let mapOptions = {
+    center: [37.5, 127.6],
+    zoom: 10,
+    zoomControl: false,
+  };
+  let map = new L.map("map", mapOptions);
+  let layer = new L.TileLayer(
+    "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  );
+  map.addLayer(layer);
+  console.log("initmap");
 };
 
 locationui.decrypt = function (cipherText, iv, password) {
