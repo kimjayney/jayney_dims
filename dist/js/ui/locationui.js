@@ -179,6 +179,24 @@ locationui.directionRender = function (location, start_date, end_date) {
   // 처음 지점과 끝 지점의 선을 그린다.
 };
 
+function convertTimeByTimezone(dateString, timezoneOffset) {
+  // 문자열을 Date 객체로 변환 (로컬 타임존이 기본 적용됨)
+  const localDate = new Date(dateString.replace(" ", "T"));
+
+  // 로컬 타임에서 UTC 기준으로 시간 차이를 계산
+  const utcTime =
+    localDate.getTime() + localDate.getTimezoneOffset() * 60 * 1000;
+
+  // 타임존 오프셋에 맞춰 시간 변환 (UTC 오프셋은 분 단위로 계산)
+  const targetTime = new Date(utcTime + timezoneOffset * 60 * 60 * 1000);
+
+  // 변환된 시간을 "YYYY-MM-DD HH:mm:ss" 형식으로 변환
+  const adjustedTimeString = targetTime
+    .toISOString()
+    .slice(0, 19)
+    .replace("T", " ");
+  return adjustedTimeString;
+}
 locationui.skeletonMake = function () {
   console.log("SkeletonMake");
   var dashboard_area = document.createElement("div");
@@ -235,7 +253,14 @@ function addMarkers(data, password) {
         start: data[i].created_at,
       });
       let marker = new L.Marker([lat, lng]);
-      marker.addTo(map).bindPopup(data[i].created_at);
+
+      marker
+        .addTo(map)
+        .bindPopup(
+          `ZTime: ${data[i].created_at}, TIMEZONE(${
+            timezone.value
+          }) => ${convertTimeByTimezone(data[i].created_at, timezone.value)}`
+        );
       markers.push(marker);
       // markers.push(
       //   new google.maps.Marker({
