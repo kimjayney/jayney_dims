@@ -89,6 +89,53 @@ locationui.parameterRender = function () {
   } else {
   }
 };
+locationui.timezonesetting = function () {
+  const timezones = [
+    { label: "UTC-12:00", value: -12 },
+    { label: "UTC-11:00", value: -11 },
+    { label: "UTC-10:00", value: -10 },
+    { label: "UTC-09:00", value: -9 },
+    { label: "UTC-08:00", value: -8 },
+    { label: "UTC-07:00", value: -7 },
+    { label: "UTC-06:00", value: -6 },
+    { label: "UTC-05:00", value: -5 },
+    { label: "UTC-04:00", value: -4 }, // 워싱턴 D.C.
+    { label: "UTC-03:00", value: -3 },
+    { label: "UTC-02:00", value: -2 },
+    { label: "UTC-01:00", value: -1 },
+    { label: "UTC±00:00", value: 0 }, // UTC 기준
+    { label: "UTC+01:00", value: 1 },
+    { label: "UTC+02:00", value: 2 },
+    { label: "UTC+03:00", value: 3 },
+    { label: "UTC+04:00", value: 4 },
+    { label: "UTC+05:00", value: 5 },
+    { label: "UTC+06:00", value: 6 },
+    { label: "UTC+07:00", value: 7 },
+    { label: "UTC+08:00", value: 8 },
+    { label: "UTC+09:00", value: 9 }, // 한국 표준시 (KST)
+    { label: "UTC+10:00", value: 10 },
+    { label: "UTC+11:00", value: 11 },
+    { label: "UTC+12:00", value: 12 },
+    { label: "UTC+13:00", value: 13 },
+    { label: "UTC+14:00", value: 14 },
+  ];
+
+  // select 박스에 옵션 추가
+  const timezoneSelect = document.getElementById("timezone");
+
+  timezones.forEach((timezone) => {
+    const option = document.createElement("option");
+    option.value = timezone.value;
+    option.textContent = timezone.label;
+    timezoneSelect.appendChild(option);
+  });
+
+  // 선택한 타임존의 값 가져오기
+  timezoneSelect.addEventListener("change", (event) => {
+    const selectedTimezone = event.target.value;
+    console.log("Selected Timezone UTC offset:", selectedTimezone);
+  });
+};
 locationui.realtime = function () {
   globalInterval = setInterval(() => {
     locationui.drawLocations(
@@ -123,6 +170,7 @@ locationui.renderEventProcess = function () {
   locationui.servicestatus();
   locationui.datetimepicker();
   locationui.parametersetting();
+  locationui.timezonesetting();
 };
 
 locationui.directionRender = function (location, start_date, end_date) {
@@ -323,11 +371,11 @@ locationui.drawLocations = async function (
   var url;
   if (typeof date == "object") {
     console.log(date.startDate);
-    url = `https://jayneycoffee.api.location.rainclab.net/api/view?device=${device}&startDate=${date.startDate}&endDate=${date.endDate}&authorization=${authorization}`;
+    url = `https://jayneycoffee.api.location.rainclab.net/api/view?device=${device}&startDate=${date.startDate}&endDate=${date.endDate}&authorization=${authorization}&timezone=${timezone.value}`;
     document.getElementById("datetimes").setAttribute("fromurl", "true");
   } else {
     rangeText.innerHTML = `${date}분 전 위치 기준`;
-    url = `https://jayneycoffee.api.location.rainclab.net/api/view?device=${device}&timeInterval=${date}&authorization=${authorization}`;
+    url = `https://jayneycoffee.api.location.rainclab.net/api/view?device=${device}&timeInterval=${date}&authorization=${authorization}&timezone=${timezone.value}`;
   }
   xmlhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
