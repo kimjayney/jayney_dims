@@ -366,7 +366,7 @@ locationui.drawLocationsBeforePreprocess = function (
     endDate: dateInfo.split(" - ")[1],
   };
 
-  rangeText.innerHTML = `현재 보이고 있는 시간기준(I TIME, Asia/Seoul): ${dateObject.startDate} ~ ${dateObject.endDate}`;
+  rangeText.innerHTML = `현재 보이고 있는 시간기준(${timezone.value}): ${dateObject.startDate} ~ ${dateObject.endDate}`;
   // Set the start date and time
   var startDate = moment(dateObject.startDate);
   var endDate = moment(dateObject.endDate);
