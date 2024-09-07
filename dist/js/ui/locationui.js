@@ -7,12 +7,12 @@ var globalInterval;
 let layer = new L.TileLayer(
   "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 );
-let map = new L.map("map", mapOptions);
 let mapOptions = {
   center: [37.5, 127.6],
   zoom: 10,
   zoomControl: false,
 };
+let map = new L.map("map", mapOptions);
 
 locationui.datepicker = function (obj) {
   $(obj).datepicker().datepicker("show");
