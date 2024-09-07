@@ -145,12 +145,9 @@ locationui.skeletonMake = function () {
 };
 function deleteMarkers() {
   for (var i = 0; i < markers.length; i++) {
-    markers[i].setMap(null);
-  }
-  markers = [];
-  for (var i = 0; i < markers.length; i++) {
     map.removeLayer(markers[i]);
   }
+  markers = [];
 }
 
 function manualMarkers(lat, lng) {
