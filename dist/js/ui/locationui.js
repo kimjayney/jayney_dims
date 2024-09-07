@@ -242,7 +242,7 @@ function setCookie(name, value, expireDate) {
 locationui.removeTimerInterval = function () {
   const myPromise = new Promise((resolve, reject) => {
     try {
-      if (globalInterval == undefined) {
+      if (globalInterval != undefined) {
         clearInterval(globalInterval);
         resolve();
       }
