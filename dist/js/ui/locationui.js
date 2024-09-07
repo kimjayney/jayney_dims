@@ -91,7 +91,7 @@ locationui.parameterRender = function () {
 };
 locationui.realtime = function () {
   setInterval(() => {
-    location.drawLocations(
+    locationui.drawLocations(
       device.value,
       10,
       password.value,
