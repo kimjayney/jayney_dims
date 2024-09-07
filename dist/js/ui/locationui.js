@@ -86,7 +86,12 @@ locationui.parameterRender = function() {
     } else { 
     }
 }
-
+location.realtime() = function() {
+    setInterval(()=> {
+        location.drawLocations(device.value, 10 ,password.value, authorization.value)
+        console.log("Sync location ")
+    }, 5000)
+}
 
 locationui.renderEventProcess = function() {
     // Render 후 후처리 해주는곳
@@ -112,15 +117,7 @@ locationui.renderEventProcess = function() {
     locationui.parametersetting()
 }
 
-
-locationui.realtime = function(start_date="default"){
-    // 실시간으로 위치를 받아와야 하며
-    // 시작날짜가 없으면 default로 설정되며 오늘 날짜 기준으로 설정된다. 
-    // 시작날짜가 있으면 시작날짜부터 지금 라이브 기준으로 위치 값을 가져오고,
-    // 시작 날짜의 제일 첫번째가 첫 마커 지점이 되고,
-    // while로 실시간 위치값을 
-    //
-}
+ 
 
 locationui.directionRender = function(location, start_date, end_date) {  // using filter (시작-끝 날짜 기준이 반드시 있어야함)
  
