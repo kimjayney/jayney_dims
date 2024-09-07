@@ -193,7 +193,7 @@ function addMarkers(data, password) {
         start: data[i].created_at,
       });
       let marker = new L.Marker([lat, lng]);
-      marker.addTo(map).bindPopup(data);
+      marker.addTo(map).bindPopup(data[i].created_at);
       markers.push(marker);
       // markers.push(
       //   new google.maps.Marker({
