@@ -12,7 +12,6 @@ let mapOptions = {
   zoom: 10,
   zoomControl: false,
 };
-let map = new L.map("map", mapOptions);
 
 locationui.datepicker = function (obj) {
   $(obj).datepicker().datepicker("show");
@@ -223,7 +222,7 @@ locationui.initmap = function () {
   // script.defer = true;
   // script.async = true;
   // document.head.appendChild(script);
-
+  let map = new L.map("map", mapOptions);
   map.addLayer(layer);
   console.log("initmap");
 };
