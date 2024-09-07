@@ -5,7 +5,9 @@ var datepicker_from;
 var datepicker_to;
 var markers = [];
 var globalInterval;
-
+let layer = new L.TileLayer(
+  "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+);
 locationui.datepicker = function (obj) {
   $(obj).datepicker().datepicker("show");
 };
@@ -170,8 +172,8 @@ function addMarkers(data, password) {
     return;
   }
 
-  map.setCenter({ lat: first_lat, lng: first_lng }); // 예시 좌표
-  map.setZoom(17); // 예시 줌 레벨
+  // map.setCenter({ lat: first_lat, lng: first_lng }); // 예시 좌표
+  // map.setZoom(17); // 예시 줌 레벨
   var visualizeData = [];
   var same_created_at = [];
 
@@ -221,9 +223,7 @@ locationui.initmap = function () {
     zoomControl: false,
   };
   let map = new L.map("map", mapOptions);
-  let layer = new L.TileLayer(
-    "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-  );
+
   map.addLayer(layer);
   console.log("initmap");
 };
