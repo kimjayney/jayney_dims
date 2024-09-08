@@ -273,6 +273,10 @@ function addMarkers(data, password) {
     }
     same_created_at.push(timeSliced);
   }
+  let targetZoomLevel = 17;
+  var lat = Number(locationui.decrypt(data[0].lat, iv, password));
+  var lng = Number(locationui.decrypt(data[0].lng, iv, password));
+  map.setView([lat,lng], targetZoomLevel);
   console.log(visualizeData);
   locationui.visualize(visualizeData);
   loading.style = "display: none";
