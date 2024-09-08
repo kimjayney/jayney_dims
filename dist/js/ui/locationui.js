@@ -260,7 +260,7 @@ function addMarkers(data, password) {
           }) => ${convertTimeByTimezone(
             data[i].created_at,
             timezone.value
-          )}, IPAddr: ${data[i].ip_addr}`
+          )}, IPAddr: ${data[i].ip_addr}, Lat: ${lat}, Lng: ${lng}`
         );
       markers.push(marker);
       // markers.push(
