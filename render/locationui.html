@@ -1,50 +1,126 @@
- <div id="location-filter">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-  
-        <div class="btn-toolbar mb-2 mb-md-0">
-            <input type="text" id="device" class="form-control" placeholder="id"/>
-            <input type="password" id="authorization" class="form-control" placeholder="device authorization code"/>
-            <input type="password" id="password" class="form-control" placeholder="password"/>
-            <div class="btn-group mr-2">
-              <button id="realtime" type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.realtime()">realtime</button>
-              <button id="min10" type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 10,password.value, authorization.value)">10min ago</button>
-              <button id="hour1" type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 60, password.value, authorization.value)">1h ago</button>
-              <button id="hour3" type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 180, password.value, authorization.value)">3h ago</button>
-              <button id="hour6" type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 360, password.value, authorization.value)">6h ago</button>
-              
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="device">Device ID</label>
+                                <input type="text" class="form-control" id="device" placeholder="Device ID">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="password">Private Key</label>
+                                <input type="password" class="form-control" id="password" placeholder="Private Key">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="authorization">Device Key</label>
+                                <input type="text" class="form-control" id="authorization" placeholder="Device Key">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="timezone">Timezone</label>
+                                <select class="form-control" id="timezone"></select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Date Range</label>
+                                <input type="text" class="form-control" id="datetimes" name="datetimes"/>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="btn-group mt-4" role="group">
+                                <button id="min10" type="button" class="btn btn-outline-primary">10min</button>
+                                <button id="hour1" type="button" class="btn btn-outline-primary">1hour</button>
+                                <button id="hour3" type="button" class="btn btn-outline-primary">3hour</button>
+                                <button id="hour6" type="button" class="btn btn-outline-primary">6hour</button>
+                            </div>
+                            <button id="share" onclick="locationui.share()" type="button" class="btn btn-outline-secondary ml-2">
+                                <i class="fas fa-share-alt"></i> Share URL
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="btn-group mr-2">
-              <input id="datetimes" readonly type="text" fromurl="false" name="datetimes" />
-              
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body p-0">
+                    <div id="map-container">
+                        <div id="map"></div>
+                        <div class="map-overlay">
+                            <span id="rangeText" class="badge badge-info"></span>
+                            <div class="spinner-border text-primary" style="display: none;" id="loading" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="btn-group mr-2">
-              <select  class="form-select"  id="timezone">
-              </select>
-              
-            </div>
-            <div class="btn-group mr-2">
-              <p id="rangeText"></p>
-            </div>
-            
-          <div class="input-group-addon">
-              <span class="glyphicon glyphicon-th"></span>
-          </div>
-           
-        </div> 
-       
-      </div>
-      <div class="spinner-border" style="width: 3rem; height: 3rem; display: none; position:fixed " id="loading" role="status">
-        <span class="sr-only">Loading...</span>
-      </div>
-      
-</div>
-<div class="buttons">
-  <button id="share" onclick="locationui.share()" type="button" class="btn  btn-sm  btn-outline-secondary ">URL Copy(*Caution)</button>
+        </div>
+    </div>
 </div>
 
-<div id="map-area">
-    <div id="map"></div>
-</div>
+<style>
+#map-container {
+    position: relative;
+    height: calc(100vh - 250px);
+    min-height: 400px;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+    border-radius: 4px;
+}
+
+.map-overlay {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 5px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.custom-div-icon {
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: none !important;
+    font-size: 11px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-group .btn {
+    padding: 0.375rem 0.75rem;
+}
+
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#loading {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+</style>
+
 <div id="timetable">
   <!-- <div id="visualization"></div> -->
 </div>
