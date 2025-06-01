@@ -360,15 +360,30 @@ locationui.initmap = function () {
 
   // Initialize marker cluster group
   markerClusterGroup = L.markerClusterGroup({
-    spiderfyOnMaxZoom: true,
+    spiderfyOnMaxZoom: false,  // 스파이더 형태 비활성화
     showCoverageOnHover: true,
-    zoomToBoundsOnClick: true,
+    zoomToBoundsOnClick: false,  // 클릭 시 줌 동작 비활성화
     disableClusteringAtZoom: 19,  // 매우 가까이 줌인했을 때는 클러스터링 비활성화
-    spiderLegPolylineOptions: { weight: 1.5, color: '#222', opacity: 0.5 },
     maxClusterRadius: 40  // 클러스터 크기 조절 (기본값: 80)
   });
-  map.addLayer(markerClusterGroup);
 
+  // 클러스터 클릭 이벤트 핸들러 추가
+  markerClusterGroup.on('clusterclick', function(e) {
+    var cluster = e.layer;
+    var markers = cluster.getAllChildMarkers();
+    
+    // 현재 클러스터의 모든 마커를 제거
+    markers.forEach(function(marker) {
+      markerClusterGroup.removeLayer(marker);
+    });
+
+    // 각 마커를 정확한 위치에 다시 추가
+    markers.forEach(function(marker) {
+      marker.addTo(map);  // 맵에 직접 추가하여 클러스터링 없이 표시
+    });
+  });
+
+  map.addLayer(markerClusterGroup);
   console.log("initmap");
 };
 
