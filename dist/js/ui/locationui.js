@@ -401,15 +401,20 @@ locationui.servicestatus = function () {
             <span class="sr-only">Loading...</span>
           </div>Service healthcheck..</a>`
   console.log("TEST")
+  
+  // 언어 확인
+  const isKorean = locationui.isKoreanLanguage();
+  const messageKey = isKorean ? 'message_ko_KR' : 'message_en_US';
+
   fetch("https://jayneycoffee.api.location.rainclab.net/api/healthcheck")
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
       if (data.success == true) {
-        servicestatus.innerHTML = `Service: Active, message: ${data.message_ko_KR}`;
+        servicestatus.innerHTML = `Service: Active, message: ${data[messageKey]}`;
       }
       if (data.success == true && data.status == true) {
-        servicestatus.innerHTML = `Service: Active, Location DB: Active, message: ${data.message_ko_KR}`;
+        servicestatus.innerHTML = `Service: Active, Location DB: Active, message: ${data[messageKey]}`;
       }
     })
     .catch((error) => console.error(error));
@@ -467,6 +472,10 @@ locationui.drawLocations = async function (
   setCookie("deviceAuth", authorization, expireDate);
   var xmlhttp = new XMLHttpRequest();
 
+  // 언어 확인
+  const isKorean = locationui.isKoreanLanguage();
+  const messageKey = isKorean ? 'message_ko_KR' : 'message_en_US';
+
   var url;
   if (typeof date == "object") {
     console.log(date.startDate);
@@ -476,7 +485,6 @@ locationui.drawLocations = async function (
     rangeText.innerHTML = `${date}분 전 위치 기준`;
     url = `https://jayneycoffee.api.location.rainclab.net/api/view?device=${device}&timeInterval=${date}&authorization=${authorization}&timezone=${timezone.value}`;
   }
-
   xmlhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
       var data = JSON.parse(this.responseText);
@@ -486,17 +494,17 @@ locationui.drawLocations = async function (
             addMarkers(data.data, password);
             debugmessage.innerHTML = this.responseText;
           } else {
-            alert(data.message_ko_KR);
+            alert(data[messageKey]);
             loading.style = "display: none";
           }
         } else {
           loading.style = "display: none";
           if (date !== 5) {
-            alert("위치정보가 수집되지 않았어요. 수집기를 켜시면 수집됩니다.");
+            alert(isKorean ? "위치정보가 수집되지 않았어요. 수집기를 켜시면 수집됩니다." : "No location data collected. Please turn on the collector.");
           }
         }
       } else {
-        alert(data.message_ko_KR);
+        alert(data[messageKey]);
       }
     }
   };
@@ -618,7 +626,7 @@ locationui.share = function () {
   const parameter = `deviceId=${encodeURI(device.value)}&deviceKey=${authorization.value}&privateKey=${password.value}&timezone=${timezone.value}${dateValue}`;
   const URL = `https://jayneycoffee.location.rainclab.net/#locationui?${parameter}`;
   window.navigator.clipboard.writeText(URL).then(() => {
-    alert("복사 완료!");
+    alert("Completed.");
   });
 };
 locationui.render = function () {
@@ -721,4 +729,31 @@ locationui.getValidTimezone = function(timezoneStr) {
   if (!timezoneStr) return 9; // 빈 문자열이면 기본값 9
   const tzValue = parseInt(timezoneStr);
   return (!isNaN(tzValue) && tzValue >= -12 && tzValue <= 14) ? tzValue : 9;
+};
+
+// 언어 확인 함수 추가
+locationui.isKoreanLanguage = function() {
+  // 1. navigator.languages 배열 확인 (가장 선호하는 언어들의 전체 목록)
+  if (navigator.languages && navigator.languages.length) {
+    const preferredLanguages = navigator.languages.map(lang => lang.toLowerCase());
+    // 한국어가 포함되어 있는지 확인
+    return preferredLanguages.some(lang => lang.startsWith('ko'));
+  }
+  
+  // 2. navigator.language 확인 (주 언어)
+  if (navigator.language) {
+    return navigator.language.toLowerCase().startsWith('ko');
+  }
+  
+  // 3. navigator.userLanguage 확인 (IE 지원)
+  if (navigator.userLanguage) {
+    return navigator.userLanguage.toLowerCase().startsWith('ko');
+  }
+  
+  // 4. navigator.browserLanguage 확인 (오래된 브라우저 지원)
+  if (navigator.browserLanguage) {
+    return navigator.browserLanguage.toLowerCase().startsWith('ko');
+  }
+  
+  return false; // 기본값은 영어
 };
