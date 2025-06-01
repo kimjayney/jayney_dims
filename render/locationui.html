@@ -6,11 +6,11 @@
             <input type="password" id="authorization" class="form-control" placeholder="device authorization code"/>
             <input type="password" id="password" class="form-control" placeholder="password"/>
             <div class="btn-group mr-2">
-              <button id="realtime" type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.realtime()">실시간</button>
-              <button id="min10" type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 10,password.value, authorization.value)">10분전 위치</button>
-              <button id="hour1" type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 60, password.value, authorization.value)">1시간 전 위치</button>
-              <button id="hour3" type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 180, password.value, authorization.value)">3시간 전 위치</button>
-              <button id="hour6" type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 360, password.value, authorization.value)">6시간 전 위치</button>
+              <button id="realtime" type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.realtime()">realtime</button>
+              <button id="min10" type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 10,password.value, authorization.value)">10min ago</button>
+              <button id="hour1" type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 60, password.value, authorization.value)">1h ago</button>
+              <button id="hour3" type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 180, password.value, authorization.value)">3h ago</button>
+              <button id="hour6" type="button" class="btn btn-sm btn-outline-secondary" onclick="locationui.drawLocations(device.value, 360, password.value, authorization.value)">6h ago</button>
               
             </div>
             <div class="btn-group mr-2">
@@ -39,7 +39,7 @@
       
 </div>
 <div class="buttons">
-  <button id="share" onclick="locationui.share()" type="button" class="btn  btn-sm  btn-outline-secondary ">URL 복사하기(*주의)</button>
+  <button id="share" onclick="locationui.share()" type="button" class="btn  btn-sm  btn-outline-secondary ">URL Copy(*Caution)</button>
 </div>
 
 <div id="map-area">
