@@ -3,6 +3,7 @@ var locationui = {};
 var datepicker_from;
 var datepicker_to;
 var markers = [];
+var markerClusterGroup;
 var globalInterval;
 
 locationui.datepicker = function (obj) {
@@ -208,8 +209,8 @@ locationui.skeletonMake = function () {
   container.innerHTML = `${dashboard_area.outerHTML}`;
 };
 function deleteMarkers() {
-  for (var i = 0; i < markers.length; i++) {
-    map.removeLayer(markers[i]);
+  if (markerClusterGroup) {
+    markerClusterGroup.clearLayers();
   }
   markers = [];
 }
@@ -267,16 +268,16 @@ function addMarkers(data, password) {
         })
       });
       
-      marker
-        .addTo(map)
-        .bindPopup(
-          `ZTime: ${data[i].created_at}, TIMEZONE(${
-            timezone.value
-          }) => ${convertTimeByTimezone(
-            data[i].created_at,
-            timezone.value
-          )}, IPAddr: ${data[i].ip_addr}, Lat: ${lat}, Lng: ${lng}`
-        );
+      marker.bindPopup(
+        `ZTime: ${data[i].created_at}, TIMEZONE(${
+          timezone.value
+        }) => ${convertTimeByTimezone(
+          data[i].created_at,
+          timezone.value
+        )}, IPAddr: ${data[i].ip_addr}, Lat: ${lat}, Lng: ${lng}`
+      );
+
+      markerClusterGroup.addLayer(marker);
       markers.push(marker);
 
       // 화살표를 위한 위치 데이터 저장
@@ -346,12 +347,6 @@ function addMarkers(data, password) {
 }
 
 locationui.initmap = function () {
-  // var script = document.createElement("script");
-  // script.src =
-  //   "https://maps.googleapis.com/maps/api/js?key=AIzaSyD8SEKBpDIuPr_ut0eNjiQ_f7lNxSgJsLo&callback=initMap";
-  // script.defer = true;
-  // script.async = true;
-  // document.head.appendChild(script);
   let mapOptions = {
     center: [37.5, 127.6],
     zoom: 10,
@@ -362,6 +357,18 @@ locationui.initmap = function () {
     "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
   );
   map.addLayer(layer);
+
+  // Initialize marker cluster group
+  markerClusterGroup = L.markerClusterGroup({
+    spiderfyOnMaxZoom: true,
+    showCoverageOnHover: true,
+    zoomToBoundsOnClick: true,
+    disableClusteringAtZoom: 19,  // 매우 가까이 줌인했을 때는 클러스터링 비활성화
+    spiderLegPolylineOptions: { weight: 1.5, color: '#222', opacity: 0.5 },
+    maxClusterRadius: 40  // 클러스터 크기 조절 (기본값: 80)
+  });
+  map.addLayer(markerClusterGroup);
+
   console.log("initmap");
 };
 
