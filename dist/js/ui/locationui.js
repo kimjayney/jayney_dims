@@ -245,6 +245,11 @@ function addMarkers(data, password) {
     var lat = Number(locationui.decrypt(data[i].lat, iv, password));
     var lng = Number(locationui.decrypt(data[i].lng, iv, password));
     var timeSliced = data[i].created_at.slice(0, 16);
+    
+    // Get timezone adjusted time
+    var adjustedTime = convertTimeByTimezone(data[i].created_at, timezone.value);
+    // Extract time in HH:mm:ss format
+    var timeOnly = adjustedTime.split(' ')[1];
 
     if (!same_created_at.includes(timeSliced)) {
       visualizeData.push({
@@ -253,7 +258,15 @@ function addMarkers(data, password) {
         start: data[i].created_at,
       });
 
-      let marker = new L.Marker([lat, lng]);
+      let marker = L.marker([lat, lng], {
+        icon: L.divIcon({
+          className: 'custom-div-icon',
+          html: `<div style='background-color: white; padding: 3px; border: 1px solid #666; border-radius: 3px;'>${timeOnly}</div>`,
+          iconSize: [50, 20],
+          iconAnchor: [25, 10]
+        })
+      });
+      
       marker
         .addTo(map)
         .bindPopup(
