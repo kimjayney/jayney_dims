@@ -396,6 +396,11 @@ locationui.removeTimerInterval = function () {
 };
 locationui.servicestatus = function () {
   servicestatus.style = "display: list-item";
+  
+  document.getElementById("statusbar").innerHTML = `<a class="nav-link disabled" id="servicestatus" ><div class="spinner-border spinner-border-sm" role="status">
+            <span class="sr-only">Loading...</span>
+          </div>Service healthcheck..</a>`
+  console.log("TEST")
   fetch("https://jayneycoffee.api.location.rainclab.net/api/healthcheck")
     .then((response) => response.json())
     .then((data) => {
