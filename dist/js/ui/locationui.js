@@ -13,20 +13,20 @@ function customOrder(a, b) {
   return a.id - b.id;
 }
 locationui.visualize = function (data) {
-  var items = new vis.DataSet();
-  var container = document.getElementById("visualization");
-  var options = {
-    order: customOrder,
-    editable: true,
-    zoomable: false,
-    height: "400px",
-  };
-  container.innerHTML = "";
-  var timeline = new vis.Timeline(container, items, options);
+  // var items = new vis.DataSet();
+  // var container = document.getElementById("visualization");
+  // var options = {
+  //   order: customOrder,
+  //   editable: true,
+  //   zoomable: false,
+  //   height: "400px",
+  // };
+  // container.innerHTML = "";
+  // var timeline = new vis.Timeline(container, items, options);
 
-  items.clear();
-  items.add(data);
-  timeline.fit();
+  // items.clear();
+  // items.add(data);
+  // timeline.fit();
 };
 
 locationui.parametersetting = function () {
@@ -39,54 +39,60 @@ locationui.parametersetting = function () {
 locationui.parameterRender = function () {
   const paramValues = location.hash.split("?")[1].split("&");
   let dateRangeValue = {};
-  console.log("parameterRender");
+  let timezoneValue;
+  
+  // timezone 값을 먼저 처리
   paramValues.forEach((item) => {
-    const paramName = item.split("=")[0];
-    const paramValue = item.split("=")[1];
-    if (paramName == "deviceId") {
+    const [paramName, paramValue] = item.split("=");
+    if (paramName === "timezone") {
+      timezoneValue = paramValue;
+      timezone.value = paramValue;
+    }
+  });
+
+  // 나머지 파라미터 처리
+  paramValues.forEach((item) => {
+    const [paramName, paramValue] = item.split("=");
+    if (paramName === "deviceId") {
       device.value = paramValue;
     }
-    if (paramName == "privateKey") {
+    if (paramName === "privateKey") {
       password.value = paramValue;
     }
-    if (paramName == "deviceKey") {
+    if (paramName === "deviceKey") {
       authorization.value = paramValue;
     }
-    if (paramName == "live") {
-      if (paramValue == "min10") {
+    if (paramName === "live") {
+      if (paramValue === "min10") {
         min10.click();
-      } else if (paramValue == "hour1") {
+      } else if (paramValue === "hour1") {
         hour1.click();
-      } else if (paramValue == "hour3") {
+      } else if (paramValue === "hour3") {
         hour3.click();
-      } else if (paramValue == "hour6") {
+      } else if (paramValue === "hour6") {
         hour6.click();
       }
     }
-    if (paramName == "startDate") {
-      // value
-      // 2023-08-20 07:00:00 - 2023-08-22 03:00:00
+    if (paramName === "startDate") {
       dateRangeValue["startDate"] = decodeURI(paramValue);
     }
-    if (paramName == "endDate") {
-      // value
-      // 2023-08-20 07:00:00 - 2023-08-22 03:00:00
+    if (paramName === "endDate") {
       dateRangeValue["endDate"] = decodeURI(paramValue);
     }
   });
 
-  console.log(dateRangeValue);
-
-  // datetimes.value = `${dateRangeValue["startDate"]} - ${dateRangeValue["endDate"]}`
+  // timezone이 설정된 후에 drawLocationsBeforePreprocess 호출
   if (dateRangeValue.hasOwnProperty("startDate")) {
-    const dateValue = `${dateRangeValue["startDate"]} - ${dateRangeValue["endDate"]}`;
-    locationui.drawLocationsBeforePreprocess(
-      device.value,
-      password.value,
-      authorization.value,
-      dateValue
-    );
-  } else {
+    // timezone이 완전히 설정될 때까지 잠시 대기
+    setTimeout(() => {
+      const dateValue = `${dateRangeValue["startDate"]} - ${dateRangeValue["endDate"]}`;
+      locationui.drawLocationsBeforePreprocess(
+        device.value,
+        password.value,
+        authorization.value,
+        dateValue
+      );
+    }, 100);
   }
 };
 locationui.timezonesetting = function () {
@@ -409,23 +415,37 @@ locationui.drawLocationsBeforePreprocess = function (
   authorization,
   dateInfo
 ) {
-  var dateObject = {
-    startDate: dateInfo.split(" - ")[0],
-    endDate: dateInfo.split(" - ")[1],
-  };
+  try {
+    var dateObject = {
+      startDate: decodeURIComponent(dateInfo.split(" - ")[0]),
+      endDate: decodeURIComponent(dateInfo.split(" - ")[1])
+    };
 
-  rangeText.innerHTML = `현재 보이고 있는 시간기준(${timezone.value}): ${dateObject.startDate} ~ ${dateObject.endDate}`;
-  // Set the start date and time
-  var startDate = moment(dateObject.startDate);
-  var endDate = moment(dateObject.endDate);
-  $(function () {
-    var daterangepicker = $("#datetimes").data("daterangepicker");
-    // Set the daterangepicker's start and end dates
-    daterangepicker.setStartDate(startDate);
-    daterangepicker.setEndDate(endDate);
-  });
+    if (!moment(dateObject.startDate).isValid() || !moment(dateObject.endDate).isValid()) {
+      alert('유효하지 않은 날짜입니다.');
+      return;
+    }
 
-  locationui.drawLocations(device, dateObject, password, authorization);
+    rangeText.innerHTML = `TIME : (${timezone.value}): ${dateObject.startDate} ~ ${dateObject.endDate}`;
+    
+    // Set the start date and time
+    var startDate = moment(dateObject.startDate);
+    var endDate = moment(dateObject.endDate);
+    
+    $(function () {
+      var daterangepicker = $("#datetimes").data("daterangepicker");
+      if (daterangepicker) {
+        // Set the daterangepicker's start and end dates
+        daterangepicker.setStartDate(startDate);
+        daterangepicker.setEndDate(endDate);
+      }
+    });
+
+    locationui.drawLocations(device, dateObject, password, authorization);
+  } catch (error) {
+    console.error('Error processing dates:', error);
+    alert('날짜 처리 중 오류가 발생했습니다.');
+  }
 };
 locationui.drawLocations = async function (
   device,
@@ -436,7 +456,7 @@ locationui.drawLocations = async function (
   loading.style = "display: inline-block";
   deleteMarkers();
   var expireDate = new Date();
-  expireDate.setDate(expireDate.getDate() + 14); // 14일 후
+  expireDate.setDate(expireDate.getDate() + 14);
   setCookie("deviceId", device, expireDate);
   setCookie("devicePw", password, expireDate);
   setCookie("deviceAuth", authorization, expireDate);
@@ -451,6 +471,7 @@ locationui.drawLocations = async function (
     rangeText.innerHTML = `${date}분 전 위치 기준`;
     url = `https://jayneycoffee.api.location.rainclab.net/api/view?device=${device}&timeInterval=${date}&authorization=${authorization}&timezone=${timezone.value}`;
   }
+
   xmlhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
       var data = JSON.parse(this.responseText);
@@ -493,25 +514,92 @@ locationui.retriveValue = function () {
 
 locationui.datetimepicker = function () {
   $(function () {
+    // URL에서 날짜 파라미터 확인
+    let initialStartDate = moment().startOf("hour");
+    let initialEndDate = moment().startOf("hour").add(32, "hour");
+    
+    // URL에서 파라미터 파싱
+    try {
+      const params = new URLSearchParams(window.location.hash.split('?')[1] || '');
+      // timezone 파싱
+      if (params.has('timezone')) {
+        const tzValue = parseInt(params.get('timezone'));
+        if (!isNaN(tzValue) && tzValue >= -12 && tzValue <= 14) {
+          document.getElementById('timezone').value = tzValue;
+        }
+      }
+      
+      if (params.has('startDate') && params.has('endDate')) {
+        const decodedStartDate = decodeURIComponent(params.get('startDate'));
+        const decodedEndDate = decodeURIComponent(params.get('endDate'));
+        
+        // 유효한 날짜인지 확인
+        const tempStartDate = moment(decodedStartDate);
+        const tempEndDate = moment(decodedEndDate);
+        
+        if (tempStartDate.isValid() && tempEndDate.isValid()) {
+          initialStartDate = tempStartDate;
+          initialEndDate = tempEndDate;
+        }
+      }
+    } catch (error) {
+      console.error('Parameter parsing error:', error);
+    }
+
     $('input[name="datetimes"]')
       .daterangepicker({
         timePicker: true,
-        startDate: moment().startOf("hour"),
-        endDate: moment().startOf("hour").add(32, "hour"),
+        startDate: initialStartDate,
+        endDate: initialEndDate,
         locale: {
-          format: "Y-MM-DD HH:mm:ss",
-        },
+          format: "Y-MM-DD HH:mm:ss"
+        }
       })
-      .on("apply.daterangepicker", function (e) {
+      .on("apply.daterangepicker", function (e, picker) {
+        if (!picker.startDate.isValid() || !picker.endDate.isValid()) {
+          alert('유효하지 않은 날짜입니다. 다시 선택해주세요.');
+          return;
+        }
+
+        // 날짜 선택 시 URL 업데이트
+        const startDate = picker.startDate.format("YYYY-MM-DD HH:mm:ss");
+        const endDate = picker.endDate.format("YYYY-MM-DD HH:mm:ss");
+        
+        updateURLParameters(startDate, endDate);
+
         locationui.drawLocationsBeforePreprocess(
           device.value,
           password.value,
           authorization.value,
-          this.value
+          `${startDate} - ${endDate}`
         );
       });
+
+    // timezone select 이벤트 핸들러 추가
+    document.getElementById('timezone').addEventListener('change', function(e) {
+      updateURLParameters();
+    });
   });
 };
+
+// URL 파라미터 업데이트 함수
+function updateURLParameters(startDate = null, endDate = null) {
+  let currentUrl = new URL(window.location.href);
+  let hash = currentUrl.hash.split('?');
+  let baseHash = hash[0];
+  let params = new URLSearchParams(hash[1] || '');
+
+  // timezone 파라미터 업데이트
+  params.set('timezone', document.getElementById('timezone').value);
+  
+  // 날짜 파라미터가 제공된 경우에만 업데이트
+  if (startDate && endDate) {
+    params.set('startDate', encodeURI(startDate));
+    params.set('endDate', encodeURI(endDate));
+  }
+  
+  window.location.hash = `${baseHash}?${params.toString()}`;
+}
 locationui.share = function () {
   let dateValue = "";
   if (document.getElementById("datetimes").getAttribute("fromurl") == "true") {
@@ -520,16 +608,11 @@ locationui.share = function () {
     // Get the start date
     var startDate = daterangepicker.startDate.format("YYYY-MM-DD HH:mm:ss");
     var endDate = daterangepicker.endDate.format("YYYY-MM-DD HH:mm:ss");
-    dateValue = `&startDate=${encodeURI(startDate)}&endDate=${encodeURI(
-      endDate
-    )}`;
+    dateValue = `&startDate=${encodeURI(startDate)}&endDate=${encodeURI(endDate)}`;
   }
-  const parameter = `deviceId=${encodeURI(device.value)}&deviceKey=${
-    authorization.value
-  }&privateKey=${password.value}${dateValue}`;
+  const parameter = `deviceId=${encodeURI(device.value)}&deviceKey=${authorization.value}&privateKey=${password.value}&timezone=${timezone.value}${dateValue}`;
   const URL = `https://jayneycoffee.location.rainclab.net/#locationui?${parameter}`;
   window.navigator.clipboard.writeText(URL).then(() => {
-    // 복사가 완료되면 이 부분이 호출된다.
     alert("복사 완료!");
   });
 };
@@ -626,4 +709,11 @@ locationui.addMarker = function(lat, lng, timestamp) {
     if (locationui.markers.length >= 2) {
         locationui.drawArrows(locationui.markers);
     }
+};
+
+// timezone 파싱 함수 추가
+locationui.getValidTimezone = function(timezoneStr) {
+  if (!timezoneStr) return 9; // 빈 문자열이면 기본값 9
+  const tzValue = parseInt(timezoneStr);
+  return (!isNaN(tzValue) && tzValue >= -12 && tzValue <= 14) ? tzValue : 9;
 };
