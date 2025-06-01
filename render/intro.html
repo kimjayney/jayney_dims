@@ -1,31 +1,15 @@
- 
-
 <div class="container">
     <div class="section mb-5">
         <h3>End-to-End Encrypted Location Service</h3>
-        <p>This service implements end-to-end encryption (E2EE) for location data with the following security features:</p>
+        <p>Location data security features:</p>
         
         <div class="card mb-4">
-            <div class="card-header">
-                <h4>E2EE Implementation Details</h4>
-            </div>
             <div class="card-body">
-                <h5>✅ Encrypted Data Transmission</h5>
                 <ul>
-                    <li>Server only stores and transmits encrypted location data</li>
-                    <li>Actual location values cannot be seen by the server</li>
-                </ul>
-
-                <h5>✅ Client-Side Decryption</h5>
-                <ul>
-                    <li>Encrypted data is only decrypted in the client's browser</li>
-                    <li>Decryption is only possible with the private key</li>
-                </ul>
-
-                <h5>✅ Enhanced Security Features</h5>
-                <ul>
-                    <li>Each location data point uses a different Initialization Vector (IV)</li>
-                    <li>Only clients with the correct private key can view actual locations</li>
+                    <li>Server stores only encrypted location data</li>
+                    <li>Client-side decryption</li>
+                    <li>Unique IV for each location point</li>
+                    <li>Private key required for viewing</li>
                 </ul>
             </div>
         </div>
