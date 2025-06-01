@@ -371,6 +371,7 @@ locationui.initmap = function () {
   markerClusterGroup.on('clusterclick', function(e) {
     var cluster = e.layer;
     var markers = cluster.getAllChildMarkers();
+    var currentZoom = map.getZoom();
     
     // 현재 클러스터의 모든 마커를 제거
     markers.forEach(function(marker) {
@@ -381,6 +382,40 @@ locationui.initmap = function () {
     markers.forEach(function(marker) {
       marker.addTo(map);  // 맵에 직접 추가하여 클러스터링 없이 표시
     });
+
+    // 현재 확장된 클러스터 정보 저장
+    if (!map.expandedClusters) {
+      map.expandedClusters = [];
+    }
+    map.expandedClusters.push({
+      zoom: currentZoom,
+      markers: markers
+    });
+  });
+
+  // 줌 변경 이벤트 핸들러 추가
+  map.on('zoomend', function() {
+    var currentZoom = map.getZoom();
+    
+    // 확장된 클러스터가 있고, 줌 아웃했을 때
+    if (map.expandedClusters && map.expandedClusters.length > 0) {
+      map.expandedClusters.forEach(function(cluster) {
+        if (currentZoom < cluster.zoom) {
+          // 개별 마커들을 지도에서 제거
+          cluster.markers.forEach(function(marker) {
+            map.removeLayer(marker);
+          });
+          
+          // 마커들을 다시 클러스터 그룹에 추가
+          cluster.markers.forEach(function(marker) {
+            markerClusterGroup.addLayer(marker);
+          });
+        }
+      });
+      
+      // 처리된 클러스터 정보 초기화
+      map.expandedClusters = [];
+    }
   });
 
   map.addLayer(markerClusterGroup);
