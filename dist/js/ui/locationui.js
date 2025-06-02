@@ -163,6 +163,78 @@ locationui.renderEventProcess = function () {
   console.log("RenderEventProcess()");
   locationui.initmap();
 
+  let lastDecryptedData = null; // 마지막으로 복호화된 데이터 저장
+
+  // Decrypt 버튼 이벤트 핸들러 추가
+  document.getElementById('decrypt_btn').addEventListener('click', function() {
+    const debugData = document.getElementById('debugmessage').innerText;
+    try {
+      const jsonData = JSON.parse(debugData);
+      if (jsonData.data && Array.isArray(jsonData.data)) {
+        const decryptedData = jsonData.data.map(item => {
+          const decryptedLat = locationui.decrypt(item.lat, item.IV, password.value);
+          const decryptedLng = locationui.decrypt(item.lng, item.IV, password.value);
+          const adjustedTime = convertTimeByTimezone(item.created_at, timezone.value);
+          return {
+            lat: decryptedLat,
+            lng: decryptedLng,
+            created_at: item.created_at,
+            timezone_time: adjustedTime,
+            ip_addr: item.ip_addr
+          };
+        });
+        
+        lastDecryptedData = decryptedData; // 복호화된 데이터 저장
+        
+        document.getElementById('debugmessage_decrypt').innerHTML = 
+          '<div style="white-space: pre-wrap;">' + 
+          JSON.stringify(decryptedData, null, 2) +
+          '</div>';
+      }
+    } catch (error) {
+      document.getElementById('debugmessage_decrypt').innerHTML = 
+        '<div class="text-danger">Error decrypting data: ' + error.message + '</div>';
+    }
+  });
+
+  // Excel 내보내기 버튼 이벤트 핸들러 추가
+  document.getElementById('export_excel').addEventListener('click', function() {
+    if (!lastDecryptedData) {
+      alert('Please decrypt the data first.');
+      return;
+    }
+
+    // CSV 데이터 생성
+    const csvContent = [
+      // 헤더
+      ['Latitude', 'Longitude', 'UTC Time', `Timezone(${timezone.value}) Time`, 'IP Address'].join(','),
+      // 데이터 행
+      ...lastDecryptedData.map(item => [
+        item.lat,
+        item.lng,
+        item.created_at,
+        item.timezone_time,
+        item.ip_addr
+      ].join(','))
+    ].join('\n');
+
+    // CSV 파일 다운로드
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    // 현재 시간을 파일명에 포함
+    const now = new Date();
+    const fileName = `location_data_${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}.csv`;
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', fileName);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  });
+
   $("#filter_toggle").attr("data-content", tooltip_render);
   $("#filter_toggle").popover({
     title: "날짜 선택",
@@ -276,6 +348,21 @@ function addMarkers(data, password) {
           timezone.value
         )}, IPAddr: ${data[i].ip_addr}, Lat: ${lat}, Lng: ${lng}`
       );
+
+      // 마커 클릭 이벤트 추가
+      marker.on('click', function(e) {
+        // 모든 마커의 z-index를 기본값으로 재설정
+        markers.forEach(m => {
+          if (m._icon) {
+            m._icon.style.zIndex = 100;  // 기본 z-index
+          }
+        });
+        
+        // 클릭된 마커의 z-index를 최상위로 설정
+        if (this._icon) {
+          this._icon.style.zIndex = 1000;  // 높은 z-index
+        }
+      });
 
       markerClusterGroup.addLayer(marker);
       markers.push(marker);
