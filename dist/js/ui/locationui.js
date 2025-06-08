@@ -250,7 +250,157 @@ locationui.renderEventProcess = function () {
   locationui.datetimepicker();
   locationui.parametersetting();
   locationui.timezonesetting();
+  locationui.AnalaysisButton();
 };
+locationui.AnalaysisButton = function() {
+  let myChart = null;
+  console.log("AnalaysisButton");
+
+function showDataChart(data) {
+    try {
+        console.log('원본 데이터:', data);
+
+        // 기존 차트가 있다면 제거
+        if (myChart) {
+            myChart.destroy();
+        }
+
+        // 데이터가 배열이 아니면 파싱 시도
+        let parsedData;
+        if (typeof data === 'string') {
+            parsedData = JSON.parse(data);
+        } else {
+            parsedData = data;
+        }
+        console.log('파싱된 데이터:', parsedData);
+
+        if (!Array.isArray(parsedData)) {
+            throw new Error('데이터가 배열 형식이 아닙니다.');
+        }
+
+        // created_at 필드가 있는지 확인
+        if (parsedData.length > 0 && !parsedData[0].created_at) {
+            throw new Error('데이터에 created_at 필드가 없습니다.');
+        }
+
+        // 5분 단위로 데이터 그룹화
+        const groupedData = {};
+        parsedData.forEach(item => {
+            try {
+                const date = new Date(item.created_at);
+                if (isNaN(date.getTime())) {
+                    console.warn('잘못된 created_at:', item.created_at);
+                    return;
+                }
+                // 5분 단위로 반올림
+                date.setMinutes(Math.floor(date.getMinutes() / 5) * 5);
+                date.setSeconds(0);
+                date.setMilliseconds(0);
+                const timeKey = date.toISOString();
+                
+                groupedData[timeKey] = (groupedData[timeKey] || 0) + 1;
+            } catch (e) {
+                console.warn('데이터 처리 중 오류:', e);
+            }
+        });
+
+        console.log('그룹화된 데이터:', groupedData);
+
+        // 시간순으로 정렬
+        const sortedKeys = Object.keys(groupedData).sort();
+        
+        if (sortedKeys.length === 0) {
+            throw new Error('표시할 데이터가 없습니다.');
+        }
+
+        // 차트 데이터 준비
+        const labels = sortedKeys.map(time => {
+            const date = new Date(time);
+            return date.toLocaleTimeString('ko-KR', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false 
+            });
+        });
+        const counts = sortedKeys.map(key => groupedData[key]);
+
+        console.log('차트 데이터:', { labels, counts });
+
+        // 차트 생성
+        const ctx = document.getElementById('dataChart');
+        if (!ctx) {
+            throw new Error('차트 캔버스를 찾을 수 없습니다.');
+        }
+
+        myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '5분 단위 데이터 수',
+                    data: counts,
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    },
+                    x: {
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '5분 단위 데이터 분포'
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('차트 생성 중 오류 발생:', error);
+        alert('차트 생성 중 오류가 발생했습니다: ' + error.message);
+    }
+}
+
+// Show Chart 버튼 클릭 이벤트 핸들러 등록 
+    document.getElementById('show_chart').addEventListener('click', function() {
+        const decryptedElement = document.getElementById('debugmessage_decrypt');
+        if (!decryptedElement) {
+            alert('복호화된 데이터 요소를 찾을 수 없습니다.');
+            return;
+        }
+
+        const decryptedData = decryptedElement.textContent;
+        console.log('복호화된 데이터 텍스트:', decryptedData);
+
+        if (!decryptedData || decryptedData.trim() === '') {
+            alert('데이터를 먼저 복호화해주세요.');
+            return;
+        }
+
+        showDataChart(decryptedData);
+    }); 
+
+// 기존 코드와 통합을 위해 locationui 객체에 함수 추가
+if (typeof locationui === 'undefined') {
+    var locationui = {};
+}
+
+locationui.showChart = showDataChart; 
+}
 
 locationui.directionRender = function (location, start_date, end_date) {
   // using filter (시작-끝 날짜 기준이 반드시 있어야함)

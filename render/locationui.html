@@ -73,6 +73,50 @@
     </div>
 </div>
 
+<div id="timetable">
+</div>
+<div class="row mt-3">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">암호화된 데이터</h5>
+            </div>
+            <div class="card-body">
+                <code id="debugmessage" style="display: block; max-height: 400px; overflow-y: auto;">
+                </code>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">복호화된 데이터</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <button id="decrypt_btn" class="btn btn-sm btn-outline-secondary">데이터 복호화</button>
+                    <button id="export_excel" class="btn btn-sm btn-outline-success ml-2">Excel 내보내기</button>
+                </div>
+                <code id="debugmessage_decrypt" style="display: block; max-height: 400px; overflow-y: auto;">
+                </code>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">데이터 분석</h5>
+            </div>
+            <div class="card-body">
+                <button id="show_chart" class="btn btn-sm btn-outline-primary mb-3">차트 보기</button>
+                <div style="height: 400px;">
+                    <canvas id="dataChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
 #map-container {
     position: relative;
@@ -127,6 +171,17 @@
 
 .card {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: 100%;
+    margin-bottom: 20px;
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+code {
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
 #loading {
@@ -137,17 +192,6 @@
 }
 </style>
 
-<div id="timetable">
-  <!-- <div id="visualization"></div> -->
-</div>
-<div id="detail">
-  <code id="debugmessage">
-  </code>
-  <div class="mt-3">
-    <button id="decrypt_btn" class="btn btn-sm btn-outline-secondary">Decrypt Data</button>
-    <button id="export_excel" class="btn btn-sm btn-outline-success ml-2">Export to Excel</button>
-  </div>
-  <code id="debugmessage_decrypt" class="mt-2">
-  </code>
-</div>
+<!-- Chart.js 라이브러리 추가 -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
