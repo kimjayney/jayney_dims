@@ -183,6 +183,23 @@ locationui.renderEventProcess = function () {
 
   let lastDecryptedData = null; // 마지막으로 복호화된 데이터 저장
 
+  // 시간 버튼 이벤트 핸들러 추가
+  document.getElementById('min10').addEventListener('click', function() {
+    locationui.handleTimeButtonClick(10);
+  });
+  
+  document.getElementById('hour1').addEventListener('click', function() {
+    locationui.handleTimeButtonClick(60);
+  });
+  
+  document.getElementById('hour3').addEventListener('click', function() {
+    locationui.handleTimeButtonClick(180);
+  });
+  
+  document.getElementById('hour6').addEventListener('click', function() {
+    locationui.handleTimeButtonClick(360);
+  });
+
   // Decrypt 버튼 이벤트 핸들러 추가
   document.getElementById('decrypt_btn').addEventListener('click', function() {
     const debugData = document.getElementById('debugmessage').innerText;
@@ -1189,4 +1206,73 @@ locationui.setDateRangeFor5Minutes = function() {
   
   // URL 파라미터 업데이트
   updateURLParameters(startDateStr, endDateStr);
+};
+
+// 시간 버튼 클릭 처리 함수
+locationui.handleTimeButtonClick = function(minutes) {
+  // 기존 타이머 제거
+  locationui.removeTimerInterval();
+  
+  // 위치 데이터 가져오기
+  locationui.drawLocations(
+    device.value,
+    minutes,
+    password.value,
+    authorization.value
+  );
+  
+  // 날짜 범위 설정
+  locationui.setDateRangeForTimeInterval(minutes);
+  
+  // URL 파라미터 업데이트
+  locationui.updateLiveParameter(minutes);
+};
+
+// 시간 간격에 맞는 날짜 범위 설정
+locationui.setDateRangeForTimeInterval = function(minutes) {
+  const now = moment();
+  const timeAgo = moment().subtract(minutes, 'minutes');
+  
+  // daterangepicker 업데이트
+  $(function () {
+    var daterangepicker = $("#datetimes").data("daterangepicker");
+    if (daterangepicker) {
+      daterangepicker.setStartDate(timeAgo);
+      daterangepicker.setEndDate(now);
+    }
+  });
+  
+  // rangeText 업데이트
+  const startDateStr = timeAgo.format("YYYY-MM-DD HH:mm:ss");
+  const endDateStr = now.format("YYYY-MM-DD HH:mm:ss");
+  rangeText.innerHTML = `TIME : (${timezone.value}): ${startDateStr} ~ ${endDateStr}`;
+  
+  // URL 파라미터 업데이트
+  updateURLParameters(startDateStr, endDateStr);
+};
+
+// live 파라미터 업데이트
+locationui.updateLiveParameter = function(minutes) {
+  let liveValue = '';
+  if (minutes === 10) {
+    liveValue = 'min10';
+  } else if (minutes === 60) {
+    liveValue = 'hour1';
+  } else if (minutes === 180) {
+    liveValue = 'hour3';
+  } else if (minutes === 360) {
+    liveValue = 'hour6';
+  }
+  
+  if (liveValue) {
+    let currentUrl = new URL(window.location.href);
+    let hash = currentUrl.hash.split('?');
+    let baseHash = hash[0];
+    let params = new URLSearchParams(hash[1] || '');
+    
+    params.set('live', liveValue);
+    params.set('timezone', document.getElementById('timezone').value);
+    
+    window.location.hash = `${baseHash}?${params.toString()}`;
+  }
 };
