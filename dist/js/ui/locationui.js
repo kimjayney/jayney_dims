@@ -41,6 +41,8 @@ locationui.parameterRender = function () {
   const paramValues = location.hash.split("?")[1].split("&");
   let dateRangeValue = {};
   let timezoneValue;
+  let hasLiveParam = false;
+  let hasDateRange = false;
   
   // timezone 값을 먼저 처리
   paramValues.forEach((item) => {
@@ -64,6 +66,7 @@ locationui.parameterRender = function () {
       authorization.value = paramValue;
     }
     if (paramName === "live") {
+      hasLiveParam = true;
       if (paramValue === "min10") {
         min10.click();
       } else if (paramValue === "hour1") {
@@ -76,14 +79,28 @@ locationui.parameterRender = function () {
     }
     if (paramName === "startDate") {
       dateRangeValue["startDate"] = decodeURI(paramValue);
+      hasDateRange = true;
     }
     if (paramName === "endDate") {
       dateRangeValue["endDate"] = decodeURI(paramValue);
+      hasDateRange = true;
     }
   });
 
-  // timezone이 설정된 후에 drawLocationsBeforePreprocess 호출
-  if (dateRangeValue.hasOwnProperty("startDate")) {
+  // live 파라미터나 날짜 범위가 없으면 기본적으로 5분전 위치 보여주기
+  if (!hasLiveParam && !hasDateRange) {
+    // timezone이 완전히 설정될 때까지 잠시 대기
+    setTimeout(() => {
+      locationui.drawLocations(
+        device.value,
+        5,
+        password.value,
+        authorization.value
+      );
+    }, 100);
+  }
+  // timezone이 설정된 후에 drawLocationsBeforePreprocess 호출 (날짜 범위가 있는 경우)
+  else if (dateRangeValue.hasOwnProperty("startDate")) {
     // timezone이 완전히 설정될 때까지 잠시 대기
     setTimeout(() => {
       const dateValue = `${dateRangeValue["startDate"]} - ${dateRangeValue["endDate"]}`;
