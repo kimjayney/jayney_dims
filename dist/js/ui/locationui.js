@@ -1029,8 +1029,40 @@ locationui.share = function () {
     var endDate = daterangepicker.endDate.format("YYYY-MM-DD HH:mm:ss");
     dateValue = `&startDate=${encodeURI(startDate)}&endDate=${encodeURI(endDate)}`;
   }
-  const parameter = `deviceId=${encodeURI(device.value)}&deviceKey=${authorization.value}&privateKey=${password.value}&timezone=${timezone.value}${dateValue}`;
+  
+  // 현재 URL에서 base64 파라미터 확인
+  const currentHash = location.hash.split("?")[1];
+  let isBase64Mode = false;
+  if (currentHash) {
+    const paramValues = currentHash.split("&");
+    paramValues.forEach((item) => {
+      const [paramName, paramValue] = item.split("=");
+      if (paramName === "base64" && paramValue === "true") {
+        isBase64Mode = true;
+      }
+    });
+  }
+  
+  // privateKey 처리
+  let privateKeyParam = "";
+  if (isBase64Mode) {
+    // Base64 모드: 현재 password 값을 Base64로 인코딩
+    const base64Key = btoa(password.value);
+    // URL_SAFE Base64로 변환
+    const urlSafeBase64 = base64Key.replace(/\+/g, '-').replace(/\//g, '_');
+    privateKeyParam = `privateKey=${encodeURI(urlSafeBase64)}&base64=true`;
+  } else {
+    // 일반 모드: 기존 방식
+    privateKeyParam = `privateKey=${encodeURI(password.value)}`;
+  }
+  
+  const parameter = `deviceId=${encodeURI(device.value)}&deviceKey=${authorization.value}&${privateKeyParam}&timezone=${timezone.value}${dateValue}`;
   const URL = `https://jayneycoffee.location.rainclab.net/#locationui?${parameter}`;
+  
+  console.log('Share URL Debug:');
+  console.log('  - Base64 mode:', isBase64Mode);
+  console.log('  - Generated URL:', URL);
+  
   window.navigator.clipboard.writeText(URL).then(() => {
     alert("Completed.");
   });
