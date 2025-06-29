@@ -60,7 +60,39 @@ locationui.parameterRender = function () {
       device.value = paramValue;
     }
     if (paramName === "privateKey") {
-      password.value = paramValue;
+      // base64 파라미터가 true인 경우에만 Base64 디코딩
+      let isBase64 = false;
+      paramValues.forEach((base64Item) => {
+        const [base64ParamName, base64ParamValue] = base64Item.split("=");
+        if (base64ParamName === "base64" && base64ParamValue === "true") {
+          isBase64 = true;
+        }
+      });
+      
+      if (isBase64) {
+        // Base64 디코딩
+        const decodedBase64 = decodeURIComponent(paramValue);
+        // URL_SAFE Base64를 일반 Base64로 변환
+        const base64 = decodedBase64.replace(/-/g, '+').replace(/_/g, '/');
+        const finalKey = atob(base64);
+        
+        console.log('PrivateKey Debug (Base64):');
+        console.log('  - Base64 encoded key:', paramValue);
+        console.log('  - Decoded key:', finalKey);
+        console.log('  - Key length:', finalKey.length);
+        
+        password.value = finalKey;
+      } else {
+        // 기존 방식: 일반 URL 디코딩
+        const decodedKey = decodeURIComponent(paramValue);
+        
+        console.log('PrivateKey Debug (Normal):');
+        console.log('  - Encoded key:', paramValue);
+        console.log('  - Decoded key:', decodedKey);
+        console.log('  - Key length:', decodedKey.length);
+        
+        password.value = decodedKey;
+      }
     }
     if (paramName === "deviceKey") {
       authorization.value = paramValue;
@@ -896,6 +928,38 @@ locationui.datetimepicker = function () {
           initialStartDate = tempStartDate;
           initialEndDate = tempEndDate;
         }
+      }
+
+      // privateKey 특별 처리
+      if (params.has('privateKey')) {
+        const privateKeyValue = params.get('privateKey');
+        // base64 파라미터가 true인 경우에만 Base64 디코딩
+        if (params.has('base64') && params.get('base64') === 'true') {
+          const decodedBase64 = decodeURIComponent(privateKeyValue);
+          // URL_SAFE Base64를 일반 Base64로 변환
+          const base64 = decodedBase64.replace(/-/g, '+').replace(/_/g, '/');
+          const finalKey = atob(base64);
+          
+          console.log('PrivateKey Debug (Base64):');
+          console.log('  - Base64 encoded key:', privateKeyValue);
+          console.log('  - Decoded key:', finalKey);
+          console.log('  - Key length:', finalKey.length);
+          
+          password.value = finalKey;
+        } else {
+          // 기존 방식: 일반 URL 디코딩
+          const decodedKey = decodeURIComponent(privateKeyValue);
+          
+          console.log('PrivateKey Debug (Normal):');
+          console.log('  - Encoded key:', privateKeyValue);
+          console.log('  - Decoded key:', decodedKey);
+          console.log('  - Key length:', decodedKey.length);
+          
+          password.value = decodedKey;
+        }
+        
+        console.log('  - Password field value:', password.value);
+        console.log('  - Password field length:', password.value.length);
       }
     } catch (error) {
       console.error('Parameter parsing error:', error);
