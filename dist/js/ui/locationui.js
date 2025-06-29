@@ -91,7 +91,8 @@ locationui.parameterRender = function () {
   if (!hasLiveParam && !hasDateRange) {
     // timezone이 완전히 설정될 때까지 잠시 대기
     setTimeout(() => {
-      locationui.drawLocations(
+      // 5분전 위치 데이터를 가져온 후 좌표 기반으로 timezone 설정
+      locationui.drawLocationsWithTimezoneDetection(
         device.value,
         5,
         password.value,
@@ -1080,4 +1081,112 @@ locationui.isKoreanLanguage = function() {
   }
   
   return false; // 기본값은 영어
+};
+
+// 좌표 기반으로 한국 위치 감지 시 자동으로 UTC+9 설정하는 함수
+locationui.detectTimezoneFromCoordinates = function(lat, lng) {
+  // 한국 영역 좌표 (대략적인 범위)
+  const koreaBounds = {
+    north: 38.6,  // 북쪽 경계
+    south: 33.0,  // 남쪽 경계
+    east: 132.0,  // 동쪽 경계
+    west: 124.5   // 서쪽 경계
+  };
+  
+  // 좌표가 한국 영역 내에 있는지 확인
+  if (lat >= koreaBounds.south && lat <= koreaBounds.north &&
+      lng >= koreaBounds.west && lng <= koreaBounds.east) {
+    console.log('한국 위치 감지됨. UTC+9로 설정합니다.');
+    timezone.value = 9;
+    return 9;
+  }
+  
+  return null; // 한국이 아닌 경우 null 반환
+};
+
+// 5분전 위치 데이터를 가져온 후 timezone 감지 및 날짜 범위 설정
+locationui.drawLocationsWithTimezoneDetection = function(device, timeInterval, password, authorization) {
+  loading.style = "display: inline-block";
+  deleteMarkers();
+  
+  var expireDate = new Date();
+  expireDate.setDate(expireDate.getDate() + 14);
+  setCookie("deviceId", device, expireDate);
+  setCookie("devicePw", password, expireDate);
+  setCookie("deviceAuth", authorization, expireDate);
+  
+  var xmlhttp = new XMLHttpRequest();
+  const isKorean = locationui.isKoreanLanguage();
+  const messageKey = isKorean ? 'message_ko_KR' : 'message_en_US';
+
+  const url = `https://jayneycoffee.api.location.rainclab.net/api/view?device=${device}&timeInterval=${timeInterval}&authorization=${authorization}&timezone=${timezone.value}`;
+  
+  xmlhttp.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200) {
+      var data = JSON.parse(this.responseText);
+      if (data.status == true) {
+        if (data.data.length > 0) {
+          // 첫 번째 위치 데이터로 timezone 감지
+          const firstLocation = data.data[0];
+          const decryptedLat = Number(locationui.decrypt(firstLocation.lat, firstLocation.IV, password));
+          const decryptedLng = Number(locationui.decrypt(firstLocation.lng, firstLocation.IV, password));
+          
+          // 좌표가 유효한 경우에만 timezone 감지
+          if (decryptedLat !== 0 && decryptedLng !== 0) {
+            const detectedTimezone = locationui.detectTimezoneFromCoordinates(decryptedLat, decryptedLng);
+            if (detectedTimezone !== null) {
+              // timezone이 변경되었으면 URL 업데이트
+              updateURLParameters();
+            }
+          }
+          
+          // 마커 추가
+          addMarkers(data.data, password);
+          debugmessage.innerHTML = this.responseText;
+          
+          // 5분전 날짜 범위 설정
+          locationui.setDateRangeFor5Minutes();
+          
+        } else {
+          loading.style = "display: none";
+          if (timeInterval !== 5) {
+            alert(isKorean ? "위치정보가 수집되지 않았어요. 수집기를 켜시면 수집됩니다." : "No location data collected. Please turn on the collector.");
+          }
+        }
+      } else {
+        alert(data[messageKey]);
+      }
+    }
+  };
+  
+  xmlhttp.open("GET", url, true);
+  xmlhttp.send();
+  
+  if (timeInterval !== 5) {
+    locationui.removeTimerInterval();
+    console.log("ClearInterval");
+  }
+};
+
+// 5분전 위치에 맞는 날짜 범위 설정
+locationui.setDateRangeFor5Minutes = function() {
+  const now = moment();
+  const fiveMinutesAgo = moment().subtract(5, 'minutes');
+  
+  // daterangepicker 업데이트
+  $(function () {
+    var daterangepicker = $("#datetimes").data("daterangepicker");
+    if (daterangepicker) {
+      daterangepicker.setStartDate(fiveMinutesAgo);
+      daterangepicker.setEndDate(now);
+    }
+  });
+  
+  // rangeText 업데이트
+  const startDateStr = fiveMinutesAgo.format("YYYY-MM-DD HH:mm:ss");
+  const endDateStr = now.format("YYYY-MM-DD HH:mm:ss");
+  rangeText.innerHTML = `TIME : (${timezone.value}): ${startDateStr} ~ ${endDateStr}`;
+  
+  // URL 파라미터 업데이트
+  updateURLParameters(startDateStr, endDateStr);
 };
