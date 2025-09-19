@@ -2,26 +2,43 @@
   <head>
     <title>reCAPTCHA demo</title>
     <script>
+      // reCAPTCHA 성공 시 실행
       var onSubmit = function(token) {
         console.log('토큰:', token);
-        document.getElementById("demo-form").submit();
+
+        // AJAX 요청 (fetch 사용)
+        fetch("https://jayneycoffee.api.location.rainclab.net/api/recaptcha", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            "g-recaptcha-response": token  // reCAPTCHA 토큰 전송
+          })
+        })
+        .then(res => res.json())
+        .then(data => {
+          console.log("서버 응답:", data);
+          alert("✅ 서버 응답: " + JSON.stringify(data));
+        })
+        .catch(err => {
+          console.error("에러 발생:", err);
+          alert("❌ 요청 실패: " + err);
+        });
       };
 
+      // reCAPTCHA 버튼 렌더링
       var onloadCallback = function() {
         grecaptcha.render('recaptcha-container', {
-          'sitekey' : '6LcCMs4rAAAAAGcEt-PRjqTxWlvw8IX_zEExQgeo', // 발급받은 site key
-          'callback' : onSubmit
+          'sitekey': '6LcCMs4rAAAAAGcEt-PRjqTxWlvw8IX_zEExQgeo', // 발급받은 site key
+          'callback': onSubmit
         });
       };
     </script>
   </head>
   <body>
-    <form id="demo-form" action="https://jayneycoffee.api.location.rainclab.net/api/recaptcha" method="POST">
-      <!-- reCAPTCHA UI -->
-      <div id="recaptcha-container"></div>
-      <br>
-      <input type="submit" value="Submit">
-    </form>
+    <!-- 버튼 클릭 → reCAPTCHA → onSubmit 실행 -->
+    <div id="recaptcha-container"></div>
 
     <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"
         async defer>
