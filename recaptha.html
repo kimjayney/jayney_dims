@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <title>reCAPTCHA demo</title>
+    <script>
+      var onSubmit = function(token) {
+        console.log('토큰:', token);
+        document.getElementById("demo-form").submit();
+      };
+
+      var onloadCallback = function() {
+        grecaptcha.render('recaptcha-container', {
+          'sitekey' : '6LcCMs4rAAAAAGcEt-PRjqTxWlvw8IX_zEExQgeo', // 발급받은 site key
+          'callback' : onSubmit
+        });
+      };
+    </script>
+  </head>
+  <body>
+    <form id="demo-form" action="https://jayneycoffee.api.location.rainclab.net/api/recaptcha" method="POST">
+      <!-- reCAPTCHA UI -->
+      <div id="recaptcha-container"></div>
+      <br>
+      <input type="submit" value="Submit">
+    </form>
+
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"
+        async defer>
+    </script>
+  </body>
+</html>
