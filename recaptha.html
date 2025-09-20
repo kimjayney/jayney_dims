@@ -2,6 +2,41 @@
   <head>
     <title>reCAPTCHA demo</title>
     <script>
+      function getMobileOS() {
+          const ua = navigator.userAgent;
+          if (/android/i.test(ua)) {
+              return "Android";
+          }
+          // iOS 기기 (iPhone, iPad, iPod)를 확인합니다.
+          if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
+              return "iOS";
+          }
+          return "Other";
+      }
+
+      function openMyApp() {
+      // 1. User-Agent로 안드로이드인지 확인
+      
+      if (getMobileOS() === 'Android' ) {
+        // 2. 안드로이드용 Intent URL 생성
+        const packageName = 'com.jennycoffee.locationtracker';
+        const fallbackUrl = encodeURIComponent(`https://play.google.com/store/apps/details?id=${packageName}`);
+        
+        // 앱을 열기 위한 커스텀 스킴 URL
+        const intentUrl = `intent://main#Intent;scheme=e2elocation;package=${packageName};S.browser_fallback_url=${fallbackUrl};end;`;
+
+        // 3. 링크 이동
+        window.location.href = intentUrl;
+        
+      } else if (getMobileOS() === 'iOS') {
+         window.location.href = 'jennyproduct://'
+      }
+    }
+
+// HTML 버튼에서 이 함수를 호출합니다.
+// <button onclick="openMyApp()">앱으로 돌아가기</button>
+
+
       // reCAPTCHA 성공 시 실행
       var onSubmit = function(token) {
         console.log('토큰:', token);
