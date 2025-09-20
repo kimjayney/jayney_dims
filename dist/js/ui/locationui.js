@@ -867,16 +867,8 @@ locationui.drawLocations = async function (
           if (data.status == true) {
             addMarkers(data.data, password);
             debugmessage.innerHTML = this.responseText;
-          } else {
-            alert(data[messageKey]);
-            loading.style = "display: none";
-          }
-        } else {
-          loading.style = "display: none";
-          if (date !== 5) {
-            alert(isKorean ? "위치정보가 수집되지 않았어요. 수집기를 켜시면 수집됩니다." : "No location data collected. Please turn on the collector.");
-          }
-        }
+          }  
+        } 
       } else {
         alert(data[messageKey]);
       }
