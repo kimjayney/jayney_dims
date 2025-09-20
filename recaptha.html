@@ -6,16 +6,8 @@
       var onSubmit = function(token) {
         console.log('토큰:', token);
 
-        // AJAX 요청 (fetch 사용)
-        fetch("https://jayneycoffee.api.location.rainclab.net/api/recaptcha", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            "g-recaptcha-response": token  // reCAPTCHA 토큰 전송
-          })
-        })
+        // AJAX GET 요청 (fetch 사용)
+        fetch(`https://jayneycoffee.api.location.rainclab.net/api/recaptcha?g-recaptcha-response=${token}`)
         .then(res => res.json())
         .then(data => {
           console.log("서버 응답:", data);
