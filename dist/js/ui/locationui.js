@@ -820,7 +820,10 @@ locationui.drawLocationsBeforePreprocess = function (
       return;
     }
 
-    rangeText.innerHTML = `TIME : (${timezone.value}): ${dateObject.startDate} ~ ${dateObject.endDate}`;
+    const startTime = moment(dateObject.startDate).format("HH:mm:ss");
+    const endTime = moment(dateObject.endDate).format("HH:mm:ss");
+
+    rangeText.innerHTML = `TIME : (${timezone.value}): ${startTime} ~ ${endTime}`;
     
     // Set the start date and time
     var startDate = moment(dateObject.startDate);
@@ -1301,12 +1304,12 @@ locationui.setDateRangeFor5Minutes = function() {
   });
   
   // rangeText 업데이트
-  const startDateStr = fiveMinutesAgo.format("YYYY-MM-DD HH:mm:ss");
-  const endDateStr = now.format("YYYY-MM-DD HH:mm:ss");
-  rangeText.innerHTML = `TIME : (${timezone.value}): ${startDateStr} ~ ${endDateStr}`;
+  const startTimeStr = fiveMinutesAgo.format("HH:mm:ss");
+  const endTimeStr = now.format("HH:mm:ss");
+  rangeText.innerHTML = `TIME : (${timezone.value}): ${startTimeStr} ~ ${endTimeStr}`;
   
   // URL 파라미터 업데이트
-  updateURLParameters(startDateStr, endDateStr);
+  updateURLParameters(fiveMinutesAgo.format("YYYY-MM-DD HH:mm:ss"), now.format("YYYY-MM-DD HH:mm:ss"));
 };
 
 // 시간 버튼 클릭 처리 함수
@@ -1344,12 +1347,12 @@ locationui.setDateRangeForTimeInterval = function(minutes) {
   });
   
   // rangeText 업데이트
-  const startDateStr = timeAgo.format("YYYY-MM-DD HH:mm:ss");
-  const endDateStr = now.format("YYYY-MM-DD HH:mm:ss");
-  rangeText.innerHTML = `TIME : (${timezone.value}): ${startDateStr} ~ ${endDateStr}`;
+  const startTimeStr = timeAgo.format("HH:mm:ss");
+  const endTimeStr = now.format("HH:mm:ss");
+  rangeText.innerHTML = `TIME : (${timezone.value}): ${startTimeStr} ~ ${endTimeStr}`;
   
   // URL 파라미터 업데이트
-  updateURLParameters(startDateStr, endDateStr);
+  updateURLParameters(timeAgo.format("YYYY-MM-DD HH:mm:ss"), now.format("YYYY-MM-DD HH:mm:ss"));
 };
 
 // live 파라미터 업데이트
