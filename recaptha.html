@@ -16,7 +16,8 @@
         .then(res => res.json())
         .then(data => {
           console.log("서버 응답:", data);
-          alert("✅ 서버 응답: " + JSON.stringify(data));
+          alert(data.message_ko_KR);
+          window.close()
         })
         .catch(err => {
           console.error("에러 발생:", err);
