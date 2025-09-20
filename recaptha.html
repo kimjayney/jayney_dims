@@ -8,7 +8,7 @@
 
         // 현재 URL에서 파라미터 가져오기
         const urlParams = new URLSearchParams(window.location.search);
-        const deviceId = urlParams.get('deviceid');
+        const deviceId = urlParams.get('deviceId');
         const authorization = urlParams.get('authorization');
 
         // AJAX GET 요청 (fetch 사용)
@@ -37,8 +37,11 @@
   <body>
     <!-- 버튼 클릭 → reCAPTCHA → onSubmit 실행 -->
      <h1>IP 수집 관련</h1>
-     <p>안녕하세요. IP 수집을 허용을 원하지 않으면 Recaptcha 과정을 거쳐 주세요.</p>
+     <p>안녕하세요. 이용자 기기가 정상적으로 등록이 되었습니다.<p>
+     <p>IP 수집을 허용을 원하지 않으면 Recaptcha 과정을 거쳐 주세요.</p>
      <p>만약 IP 수집이 필요 하다면 <b>필요없음</b> 을 눌러 주세요.</p>
+     <p>기본적으로 앱을 사용하면 IP를 수집 하지만, Recaptcha 를 거치면 IP는 수집하지 않게 됩니다.</p>
+     
      <button onclick="window.close()">필요없음</button>
     <div id="recaptcha-container"></div>
 
