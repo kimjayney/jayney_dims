@@ -232,6 +232,16 @@ locationui.renderEventProcess = function () {
     locationui.handleTimeButtonClick(360);
   });
 
+  // 분석 섹션 토글 버튼 이벤트 핸들러 추가
+  document.getElementById('toggle-analysis').addEventListener('click', function() {
+    const analysisSection = document.getElementById('analysis-section');
+    if (analysisSection.style.display === 'none') {
+      analysisSection.style.display = 'flex'; // 또는 'block'
+    } else {
+      analysisSection.style.display = 'none';
+    }
+  });
+
   // Decrypt 버튼 이벤트 핸들러 추가
   document.getElementById('decrypt_btn').addEventListener('click', function() {
     const debugData = document.getElementById('debugmessage').innerText;
@@ -867,12 +877,15 @@ locationui.drawLocations = async function (
           if (data.status == true) {
             addMarkers(data.data, password);
             debugmessage.innerHTML = this.responseText;
+            
           }  
         } 
       } else {
         alert(data[messageKey]);
       }
+      loading.style = "display: none"
     }
+    
   };
   xmlhttp.open("GET", url, true);
   xmlhttp.send();
