@@ -6,8 +6,13 @@
       var onSubmit = function(token) {
         console.log('토큰:', token);
 
+        // 현재 URL에서 파라미터 가져오기
+        const urlParams = new URLSearchParams(window.location.search);
+        const deviceId = urlParams.get('deviceid');
+        const authorization = urlParams.get('authorization');
+
         // AJAX GET 요청 (fetch 사용)
-        fetch(`https://jayneycoffee.api.location.rainclab.net/api/recaptcha?g-recaptcha-response=${token}`)
+        fetch(`https://jayneycoffee.api.location.rainclab.net/api/recaptcha?g-recaptcha-response=${token}&deviceid=${deviceId}&authorization=${authorization}`)
         .then(res => res.json())
         .then(data => {
           console.log("서버 응답:", data);
