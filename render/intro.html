@@ -5,10 +5,12 @@
             <div class="card-body">
                 <ul>
                     <li>개인정보 프라이버시를 생각한 위치 앱 입니다.</li>
+                    <li>대부분의 위치 앱들은 서버에 키를 갖고 있는 구조로, 모든 앱이 그렇다는 것은 아니지만 서버 에서 키를 갖는 구조는 서버에서 암호화 처리를 해도 복호화가 가능 하기 때문에 서버 관리자가 위치를 알 수 있는 구조가 됩니다.</li>
+                    <li>그래서 구조적으로 복호화를 할 수 없게 하자는 것을 목표로 만든 앱 입니다.</li>
                     <li>여러분의 핸드폰의 GPS를 이용해 위치값을 얻습니다.</li>
                     <li>여러분의 핸드폰에서 암호화를 하고, 암호화에 필요한 중요 키를 서버에 보내지 않고, 암호화 된 채로 서버에 보냅니다.</li>
                     <li>암호화는 위치 값에 대해 각각 고정된 프라이빗 키와 IV 와 함께 AES-256 CBC 로 값을 암호화 해서 보냅니다.</li>
-                    <li>여러분의 휴대폰에서 (웹 브라우저에서) 선생님의 개인 키를 이용해 복호화 처리를 합니다.</li>
+                    <li>여러분의 휴대폰에서 (웹 브라우저에서) 개인 키를 이용해 복호화 처리를 합니다.</li>
                     <li>서버에서 plaintext 로 위치 값을 처리하지 않아서, 서버가 해킹당해도 위치 노출 위험이 없고, (감청) 위험이 없는 구조 입니다. (HTTPS TLS)</li>
                 </ul>
             </div> 
@@ -16,10 +18,8 @@
         <p>사용처 (Usecases)</p>
         <div class="card mb-4">
             <div class="card-body">
-                <ul>
-                    <li>여행 위치 기록</li> 
-                    <li>어린이 보호용</li>
-                    <li>개인 신변보호용</li>
+                <ul> 
+                    <li>어린이 보호용</li> 
                     <li>치매 노인 위치 추적용</li>
                 </ul>
             </div>
@@ -32,7 +32,6 @@
                     <li><a href="https://github.com/kimjayney/e2e-location-client-android/blob/7efbb5ac7f6c69382b4932774e80e9c7fd5d6ee0/app/src/main/java/com/jennycoffee/locationtracker/MainActivity.kt#L150">안드로이드 키 생성 구간</a></li>
                     <li><a href="https://github.com/kimjayney/e2e-location-client-android/blob/7efbb5ac7f6c69382b4932774e80e9c7fd5d6ee0/app/src/main/java/com/jennycoffee/locationtracker/LocationService.kt#L173">안드로이드 키 생성한 것을 암호화 하는 구간</a></li>
                     <li><a href="https://github.com/kimjayney/jayney_dims/blob/main/dist/js/ui/locationui.js#L739">복호화 처리 부분</a></li> 
-
                 </ul>
             </div>
         </div>
@@ -41,6 +40,7 @@
             <div class="card-body">
                 <ul>
                     <li>저희는 IP 주소를 Recaptcha를 진행한 이상 IP를 수집하지 않겠습니다.</li>
+                    <li>Recaptcha 를 사용한 이유는.. 오픈소스를 분석 해서 파라미터로 값을 넣을수 있기 때문에, 앞단에서 Recaptcha 로 걸러지지 않은것을 찾아서 IP를 일단 차단을 하겠다는 의도입니다.</li>
                     <li>저희는 악의적 방법으로 임의로 복호화를 하지 않겠습니다.</li>
                     <li>저희는 검증된 인프라를 채택해서 안전하게 인프라를 제공하겠습니다.</li>
                     <li>저희는 디지털 방식으로 나, 또는 소중한 주변 사람을 지킬 수 있는 방법이 어떤게 있는지 고민하겠습니다.</li>
@@ -52,6 +52,9 @@
             <div class="card-body">
                 <ul>
                     <li>우선은 무료로 제공을 해드릴 예정 입니다.</li> 
+                    <li>저희는 무료 플랜 내에서 데이터베이스 용량 , Cloudflare Worker 를 지속적으로 모니터링 할 계획이며,</li>
+                    <li>무료 플랜을 벗어날 경우 광고가 붙을 순 있습니다.</li>
+                    <li>무료 플랜으로 한계가 있을 경우 저희는 홍콩에 있는 서버를 미리 구비해 두었으며, 서버를 옮길 계획 입니다.</li>
                 </ul>
             </div>
         </div> 
